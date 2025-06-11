@@ -2,5 +2,11 @@ h1 {
     font-family: Helvetica;
     font-size: 100px;
     text-align: center;
-    color: rgb(57, 57, 215);
+    font-family: "Courier New";
+    font-weight: normal;
 }
+
+p {
+    font-family: "Courier New";
+}
+
