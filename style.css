@@ -10,6 +10,11 @@ p {
     font-family: "Courier New";
 }
 
-nav {
-    
+nav ul {
+    width: 50px;
+    margin: 0 auto;
+    display: inline-block;
+}
+li a {
+    font-family: "Courier New";
 }
