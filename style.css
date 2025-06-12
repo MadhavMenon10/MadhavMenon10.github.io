@@ -1,39 +1,49 @@
-h1 {
-    font-family: Helvetica;
-    font-size: 100px;
-    text-align: center;
-    font-family: "Courier New";
-    font-weight: normal;
-    position: relative;
-    bottom: 30px;
-}
 
-p {
-    font-family: "Courier New";
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 1000px;
+    margin: 0 auto;
+    padding: 10px 20px;
 }
 
 nav ul {
-    width: 500px;
-    margin: 0 auto;
+    display: flex;
     list-style: none;
-    text-align: center;
-
+    margin: 0 auto;
+    padding: 0;
+    gap: 30px;
+    position: relative;
+    left: 20px;
 }
 
 nav ul li {
     font-family: "Courier New";
-    display: inline-block;
-    margin-left: 30px;
 }
 
 #icons {
-    color: black;
     position: relative;
-    bottom: 20px;
-    right: 0px;
+    right: 0;
+    left: 50px;
+    display: flex;
+    gap: 30px;
 }
 
-a {
-    text-decoration: none;
+#icons i {
+    font-size: 30px;
     color: black;
+}
+
+h1 {
+    font-family: "Courier New";
+    font-size: 100px;
+    text-align: center;
+    position: relative;
+    bottom: 30px;
+    font-weight: normal;
+}
+
+p {
+    font-family: "Courier New";
 }
