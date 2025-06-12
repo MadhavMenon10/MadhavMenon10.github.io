@@ -4,6 +4,8 @@ h1 {
     text-align: center;
     font-family: "Courier New";
     font-weight: normal;
+    position: relative;
+    bottom: 30px;
 }
 
 p {
@@ -11,10 +13,27 @@ p {
 }
 
 nav ul {
-    width: 50px;
+    width: 500px;
     margin: 0 auto;
-    display: inline-block;
+    list-style: none;
+    text-align: center;
+
 }
-li a {
+
+nav ul li {
     font-family: "Courier New";
+    display: inline-block;
+    margin-left: 30px;
+}
+
+#icons {
+    color: black;
+    position: relative;
+    bottom: 20px;
+    right: 0px;
+}
+
+a {
+    text-decoration: none;
+    color: black;
 }
