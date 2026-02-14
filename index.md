@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="home-intro">
-  <img src="{{ '/assets/images/Headshot.png' | relative_url }}" alt="Madhav Anand Menon" class="headshot">
+  <img src="./assets/images/Headshot.png" alt="Madhav Anand Menon" class="headshot">
   <div class="home-text">
     <h1>Madhav Anand Menon</h1>
     <p class="subtitle">Undergraduate @ UIUC</p>
@@ -16,3 +16,4 @@ title: Home
     </div>
   </div>
 </div>
+
