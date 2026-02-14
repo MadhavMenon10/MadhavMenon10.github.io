@@ -1,3 +1,5 @@
 ---
-Projects
+layout: default
+title: Projects
 ---
+Projects
