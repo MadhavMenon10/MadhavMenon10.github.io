@@ -1,0 +1,117 @@
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+  
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--accent);
+  }
+  
+  /* ── Main Content ── */
+  
+  main.container {
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+    min-height: calc(100vh - 160px);
+  }
+  
+  /* ── Home Page ── */
+  
+  .home-intro {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+  
+  .home-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  
+  .home-text h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.25rem;
+    font-weight: 700;
+  }
+  
+  .home-text .subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .home-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  
+  .home-links a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .home-links a:hover {
+    text-decoration: underline;
+  }
+  
+  /* ── Page Content (CV, Writing) ── */
+  
+  .page-content h1 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+  }
+  
+  .page-content h2 {
+    font-size: 1.2rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.35rem;
+  }
+  
+  .page-content h3 {
+    font-size: 1.05rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  
+  .page-content p {
+    margin-bottom: 1rem;
+  }
+  
+  .page-content ul {
+    margin-left: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .page-content li {
+    margin-bottom: 0.35rem;
+  }
+  
+  .page-content a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  
+  .page-content a:hover {
+    text-decoration: underline;
+  }
