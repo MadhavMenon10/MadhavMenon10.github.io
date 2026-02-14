@@ -1,4 +1,4 @@
-.nav-links {
+/* /* .nav-links {
     list-style: none;
     display: flex;
     gap: 1.5rem;
@@ -17,7 +17,7 @@
   }
   
   /* ── Main Content ── */
-  
+  /*
   main.container {
     padding-top: 2.5rem;
     padding-bottom: 4rem;
@@ -26,6 +26,8 @@
   
   /* ── Home Page ── */
   
+
+  /*
   .home-intro {
     display: flex;
     gap: 2rem;
@@ -69,49 +71,4 @@
   .home-links a:hover {
     text-decoration: underline;
   }
-  
-  /* ── Page Content (CV, Writing) ── */
-  
-  .page-content h1 {
-    font-size: 1.6rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-  }
-  
-  .page-content h2 {
-    font-size: 1.2rem;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.35rem;
-  }
-  
-  .page-content h3 {
-    font-size: 1.05rem;
-    margin-top: 1.25rem;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
-  }
-  
-  .page-content p {
-    margin-bottom: 1rem;
-  }
-  
-  .page-content ul {
-    margin-left: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  
-  .page-content li {
-    margin-bottom: 0.35rem;
-  }
-  
-  .page-content a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-  
-  .page-content a:hover {
-    text-decoration: underline;
-  }
+   */
