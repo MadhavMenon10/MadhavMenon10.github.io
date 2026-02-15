@@ -19,4 +19,18 @@
     <body>
         <main class="container">{{ content }}</main>
     </body>
+    <script>
+        document
+            .querySelector(".theme-toggle")
+            .addEventListener("click", function () {
+                var isDark =
+                    document.documentElement.getAttribute("data-theme") ===
+                    "dark";
+                document.documentElement.setAttribute(
+                    "data-theme",
+                    isDark ? "light" : "dark"
+                );
+                localStorage.setItem("theme", isDark ? "light" : "dark");
+            });
+    </script>
 </html>
