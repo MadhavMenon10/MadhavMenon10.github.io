@@ -21,21 +21,27 @@
             })();
         </script>
     </head>
-    <header>
-        <nav>
-            <li>
-                <button class="theme-toggle" aria-label="Toggle dark mode">
-                    <span class="icon-moon">☽</span>
-                    <span class="icon-sun">☀</span>
-                </button>
-            </li>
-            <li>
-                <a href="../projects.md">Projects</a>
-            </li>
-        </nav>
-       
-    </header>
     <body>
+        <header class="site-header">
+            <nav class="container nav-container">
+                <a href="/" class="site-name">Madhav Anand Menon</a>
+                <ul class="nav-links">
+                    <li><a href="/" class="active">Home</a></li>
+                    <!-- <li><a href="/cv" >CV</a></li> -->
+                    <li><a href="/writing">Writing</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li>
+                        <button
+                            class="theme-toggle"
+                            aria-label="Toggle dark mode"
+                        >
+                            <span class="icon-moon">☽</span>
+                            <span class="icon-sun">☀</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </header>
         <main class="container">{{ content }}</main>
     </body>
     <script>
