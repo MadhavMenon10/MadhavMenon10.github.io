@@ -1,15 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
-  <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
-</head>
-<body>
-  <main class="container">
-    {{ content }}
-  </main>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+            {% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}
+        </title>
+        <link rel="stylesheet" href="{{ '/style.css' | relative_url }}" />
+    </head>
+    <header>
+        <li>
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="icon-moon">☽</span>
+                <span class="icon-sun">☀</span>
+            </button>
+        </li>
+    </header>
+    <body>
+        <main class="container">{{ content }}</main>
+    </body>
 </html>
-
