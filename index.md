@@ -16,3 +16,6 @@ title: Home
     </div>
   </div>
 </div>
+
+### About Me
+I was born in Palakkad, KL, India. Since then, I have lived in Mumbai, MH, Singapore, and Urbana-Champaign, IL, USA. 
