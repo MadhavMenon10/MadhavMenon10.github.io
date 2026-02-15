@@ -7,7 +7,7 @@ title: Home
   <img src="./assets/images/Headshot.png" alt="Madhav Anand Menon" class="home-photo">
   <div class="home-text">
     <h1>Madhav Anand Menon</h1>
-    <p class="subtitle">Undergraduate @ UIUC</p>
+    <p class="subtitle">B.S. Computer Science and Physics @ UIUC; Minor in Mathematics</p>
     <div class="home-links">
       <a href="mailto:madhavanandmenon@gmail.com">Email</a>
       <a href="https://github.com/MadhavMenon10" target="_blank">GitHub</a>
@@ -16,4 +16,3 @@ title: Home
     </div>
   </div>
 </div>
-
