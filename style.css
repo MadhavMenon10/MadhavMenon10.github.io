@@ -208,6 +208,11 @@ main h2, main h3 {
   flex-shrink: 0;
 }
 
+.edu-main {
+  flex: 1;
+  min-width: 0;
+}
+
 .edu-school {
   font-size: 1rem;
   font-weight: 600;
