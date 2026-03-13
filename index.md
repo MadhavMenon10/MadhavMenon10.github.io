@@ -24,13 +24,27 @@ title: Home
 <div class="education-list">
   <div class="edu-card">
     <div class="edu-header">
+      <img src="./assets/images/uiuc_logo.png" alt="UIUC" class="edu-logo">
       <div class="edu-main">
         <div class="edu-school">University of Illinois Urbana-Champaign</div>
         <div class="edu-degree">B.S. Computer Science and Physics &middot; Minor in Mathematics</div>
       </div>
       <div class="edu-meta">
-        <span class="edu-dates">Aug 2023 &ndash; May 2027</span>
-        <span class="edu-location">Urbana-Champaign, IL</span>
+        <span class="edu-dates">Aug. 2024&ndash; May 2028</span>
+        <span class="edu-location">Champaign, IL, United States</span>
+      </div>
+    </div>
+  </div>
+  <div class="edu-card">
+    <div class="edu-header">
+      <img src="./assets/images/kc_logo.jpeg" alt="KC High" class="edu-logo">
+      <div class="edu-main">
+        <div class="edu-school">KC High International School</div>
+        <div class="edu-degree">IB &middot; Cambridge IGCSE</div>
+      </div>
+      <div class="edu-meta">
+        <span class="edu-dates">Jul. 2019&ndash; May 2024</span>
+        <span class="edu-location">Chennai, TN, India</span>
       </div>
     </div>
   </div>
