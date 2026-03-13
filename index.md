@@ -19,3 +19,20 @@ title: Home
 
 ### About Me
 Test
+
+### Education
+
+<div class="education-list">
+  <div class="edu-card">
+    <div class="edu-header">
+      <div class="edu-main">
+        <div class="edu-school">University of Illinois Urbana-Champaign</div>
+        <div class="edu-degree">B.S. Computer Science and Physics &middot; Minor in Mathematics</div>
+      </div>
+      <div class="edu-meta">
+        <span class="edu-dates">Aug 2023 &ndash; May 2027</span>
+        <span class="edu-location">Urbana-Champaign, IL</span>
+      </div>
+    </div>
+  </div>
+</div>
