@@ -162,6 +162,20 @@ main.container {
   text-decoration: underline;
 }
 
+/* ── Section Headings ── */
+
+main h2, main h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
 /* ── Education ── */
 
 .education-list {

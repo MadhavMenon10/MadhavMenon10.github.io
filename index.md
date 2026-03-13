@@ -17,11 +17,10 @@ title: Home
   </div>
 </div>
 
-### About Me
-Test
+<h3>About Me</h3>
+<p>Test</p>
 
-### Education
-
+<h3>Education</h3>
 <div class="education-list">
   <div class="edu-card">
     <div class="edu-header">
