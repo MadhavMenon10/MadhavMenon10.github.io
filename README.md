@@ -1,8 +1,10 @@
 # madhavmenon10.github.io
 
-Personal portfolio — a static-first [Astro](https://astro.build) site with a
-WebGL2 hero (a star field drifting over a warping "spacetime" grid) and a
-schematic, scroll-triggered GPU-pipeline animation. Aesthetic: a fusion of
+Personal portfolio — a static-first [Astro](https://astro.build) site. A WebGL2
+"spacetime" grid + star field renders as a **full-page background** (bright and
+additive in dark mode, **black** in light mode), the main content sits in a
+translucent **terminal window**, and the projects section features a stylized
+GPU **streaming-multiprocessor (SM) block diagram**. Aesthetic: a fusion of
 systems/GPU programming and astrophysics, dark-mode first.
 
 Built to stay fast and accessible:
@@ -74,12 +76,18 @@ utilities (`bg-bg`, `text-fg`, `text-accent`, …).
   The `warp()` function controls the grid deformation: ambient ripple
   (`u_amp`, `u_freq`, `u_drift`) plus a mouse "gravity well"
   (`u_wellStrength`, `u_wellRadius`).
-- **Uniform values, camera, colors, quality tiers** —
-  [`src/scripts/hero.ts`](src/scripts/hero.ts). `pickTier()` scales the grid
-  resolution and star count by device; `DPR_CAP` limits overdraw.
+- **Uniform values, camera, per-theme colors, quality tiers** —
+  [`src/scripts/hero.ts`](src/scripts/hero.ts). `frame()` sets the blend mode
+  and palette per theme (additive bright in dark; normal-blend black in light);
+  `pickTier()` scales grid resolution and star count by device; `DPR_CAP` limits
+  overdraw.
+- **Terminal tint + SM-diagram palette** — CSS variables in
+  [`src/styles/global.css`](src/styles/global.css) (`--term-*`, `--sm-*`),
+  themed for dark and light.
 
-Degradation: light mode, no WebGL2, low-power devices, and
-`prefers-reduced-motion` all fall back to the CSS gradient.
+Degradation: no WebGL2, low-power devices, and `prefers-reduced-motion` fall
+back to the static CSS gradient. The terminal uses `backdrop-filter` — if you
+hit jank on low-end GPUs, raise the `--term-bg` opacity and drop the blur.
 
 ## Project structure
 
@@ -88,8 +96,8 @@ src/
 ├─ data/site.ts            # single source of truth for page content
 ├─ content/                # "writing" collection (Markdown posts) + schema
 ├─ layouts/Base.astro      # HTML shell, head, theme bootstrap, nav/footer
-├─ components/             # Hero, About, Links, Projects, Writing, Pipeline, …
-├─ scripts/                # hero (WebGL2), gl-shaders, gl-math, reveal
+├─ components/             # Hero, Terminal, About, Links, Projects, Writing, GpuDiagram, …
+├─ scripts/                # hero (WebGL2 grid bg), gl-shaders, gl-math, reveal
 ├─ styles/global.css       # Tailwind entry + design tokens + keyframes
 └─ pages/index.astro       # single-page assembly
 public/                    # static assets (favicon, resume, images, .nojekyll)

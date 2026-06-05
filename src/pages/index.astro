@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Terminal from '../components/Terminal.astro';
 import About from '../components/About.astro';
 import Links from '../components/Links.astro';
 import Projects from '../components/Projects.astro';
@@ -9,8 +10,14 @@ import Writing from '../components/Writing.astro';
 
 <Base>
   <Hero />
-  <About />
-  <Links />
-  <Projects />
-  <Writing />
+
+  <!-- Main content lives in a terminal window floating over the grid bg. -->
+  <div class="relative z-10 mx-auto w-full max-w-3xl px-4 pb-24 sm:px-6">
+    <Terminal title="madhav@portfolio: ~">
+      <About />
+      <Links />
+      <Projects />
+      <Writing />
+    </Terminal>
+  </div>
 </Base>

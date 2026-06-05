@@ -38,8 +38,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 
     <!--
       Theme bootstrap. Runs BEFORE first paint to avoid a flash of the wrong
-      theme. is:inline keeps it out of the bundle so it executes immediately.
-      Order of precedence: saved choice > system preference > dark default.
+      theme, and adds `.js` so JS-only enhancements (reveal animations) don't
+      hide content when JavaScript is disabled.
+      Precedence: saved choice > system preference > dark default.
     -->
     <script is:inline>
       (function () {
@@ -59,6 +60,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     </script>
   </head>
   <body>
+    <!-- Full-page background: WebGL grid over a CSS deep-space gradient.
+         Fixed and behind everything; the gradient is the no-JS fallback. -->
+    <div class="site-bg" aria-hidden="true">
+      <div class="site-gradient"></div>
+      <canvas id="grid-canvas"></canvas>
+    </div>
+
     <a class="skip-link" href="#main">Skip to content</a>
     <Nav />
     <main id="main">
@@ -67,7 +75,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <Footer />
 
     <script>
+      import { initHero } from '../scripts/hero';
       import { initReveal } from '../scripts/reveal';
+      initHero();
       initReveal();
     </script>
   </body>

@@ -1,12 +1,14 @@
 /* ===========================================================================
-   hero.ts — WebGL2 star field on a warping spacetime grid.
+   hero.ts — WebGL2 star field on a warping "spacetime" grid, used as a
+   full-page fixed background behind the terminal content.
 
-   ONE program, TWO draw calls (grid lines + star points). Performance-first:
-     - DPR capped to keep additive-blend overdraw in check
-     - rAF pauses when the hero is offscreen, the tab is hidden, or the theme
-       is light (the effect is dark-mode only; light shows the CSS gradient)
-     - particle count scales by device capability (graceful degradation)
-     - respects prefers-reduced-motion (renders nothing -> gradient fallback)
+   ONE program, TWO draw calls (grid lines + star points). Theme-aware:
+     - dark  : additive blending, bright blue/white lines + dots
+     - light : normal "over" blending, BLACK lines + dots (additive can't darken)
+
+   Performance-first: DPR-capped; the loop pauses when the tab is hidden;
+   particle count scales by device; respects prefers-reduced-motion (draws
+   nothing -> the CSS gradient shows through).
 
    See gl-shaders.ts for the (commented) shader math and tunables.
 =========================================================================== */
@@ -34,7 +36,7 @@ function pickTier(): Tier {
 }
 
 export function initHero(): void {
-  const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
+  const canvas = document.getElementById('grid-canvas') as HTMLCanvasElement | null;
   if (!canvas) return;
 
   // Animations off -> keep the static gradient, draw nothing.
@@ -73,16 +75,16 @@ export function initHero(): void {
     pointScale: gl.getUniformLocation(program, 'u_pointScale'),
     colorStar: gl.getUniformLocation(program, 'u_colorStar'),
     colorGrid: gl.getUniformLocation(program, 'u_colorGrid'),
+    starAlpha: gl.getUniformLocation(program, 'u_starAlpha'),
+    gridAlpha: gl.getUniformLocation(program, 'u_gridAlpha'),
   };
 
   const gridVAO = makeVAO(gl, grid.positions, grid.seeds, aPos, aSeed);
   const starVAO = makeVAO(gl, stars.positions, stars.seeds, aPos, aSeed);
 
-  // ---- GL state: premultiplied additive blending over a transparent clear --
   gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE);
   gl.disable(gl.DEPTH_TEST);
-  gl.clearColor(0, 0, 0, 0);
+  gl.clearColor(0, 0, 0, 0); // transparent -> composites over the CSS gradient
 
   const proj = create();
   const view = create();
@@ -117,10 +119,9 @@ export function initHero(): void {
   }
 
   // ---- Animation loop with pause/resume ----
-  const html = document.documentElement;
-  const isDark = () => html.getAttribute('data-theme') !== 'light';
+  const root = document.documentElement;
+  const isDark = () => root.getAttribute('data-theme') !== 'light';
   let running = false;
-  let visible = true;
   let raf = 0;
   let elapsed = 0; // animation-time seconds (advances only while running)
   let last = 0;
@@ -143,6 +144,22 @@ export function initHero(): void {
 
     lookAt(view, [Math.sin(t * 0.08) * 1.5, 7.5, 16], [0, -2.5, -6], [0, 1, 0]);
 
+    // Theme-dependent blend mode + palette (premultiplied output either way).
+    const dark = isDark();
+    if (dark) {
+      gl.blendFunc(gl.ONE, gl.ONE); // additive: lines/dots add light
+      gl.uniform3f(u.colorStar, 0.85, 0.9, 1.0);
+      gl.uniform3f(u.colorGrid, 0.43, 0.66, 1.0);
+      gl.uniform1f(u.starAlpha, 1.0);
+      gl.uniform1f(u.gridAlpha, 0.5);
+    } else {
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); // normal "over": dark marks
+      gl.uniform3f(u.colorStar, 0.03, 0.04, 0.07);  // near-black dots
+      gl.uniform3f(u.colorGrid, 0.04, 0.05, 0.09);  // near-black lines
+      gl.uniform1f(u.starAlpha, 0.95);
+      gl.uniform1f(u.gridAlpha, 0.6);
+    }
+
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniformMatrix4fv(u.proj, false, proj);
     gl.uniformMatrix4fv(u.view, false, view);
@@ -155,8 +172,6 @@ export function initHero(): void {
     gl.uniform1f(u.drift, 0.5);
     gl.uniform1f(u.wellStrength, 6.0);
     gl.uniform1f(u.wellRadius, 60.0);
-    gl.uniform3f(u.colorStar, 0.85, 0.9, 1.0);
-    gl.uniform3f(u.colorGrid, 0.43, 0.66, 1.0);
 
     // Pass 1: spacetime grid (lines)
     gl.uniform1f(u.mode, 0.0);
@@ -174,7 +189,7 @@ export function initHero(): void {
   };
 
   const start = () => {
-    if (running || !visible || !isDark()) return;
+    if (running) return;
     running = true;
     last = 0;
     raf = requestAnimationFrame(frame);
@@ -184,23 +199,11 @@ export function initHero(): void {
     cancelAnimationFrame(raf);
   };
 
-  // Pause when the hero scrolls offscreen.
-  new IntersectionObserver((entries) => {
-    visible = entries[0].isIntersecting;
-    visible ? start() : stop();
-  }, { threshold: 0 }).observe(canvas);
-
-  // Pause when the tab is hidden.
+  // Pause when the tab is hidden (saves battery; the bg is otherwise always up).
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop();
     else start();
   });
-
-  // React to theme toggle: run in dark, clear+idle in light.
-  new MutationObserver(() => {
-    if (isDark()) start();
-    else { stop(); gl.clear(gl.COLOR_BUFFER_BIT); }
-  }).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
 
   // Stop cleanly on context loss (decorative — no restore needed).
   canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); stop(); });

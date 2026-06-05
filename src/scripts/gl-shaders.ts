@@ -5,8 +5,13 @@
      - the spacetime grid  (gl.LINES,  u_mode = 0.0)
      - the star field      (gl.POINTS, u_mode = 1.0)
 
-   TUNE the look by editing the uniforms set in hero.ts (search "Warp tunables"
-   and "u_pointScale"), or tweak the math directly in warp() below.
+   The fragment outputs PREMULTIPLIED alpha so the SAME shader works for both
+   blend modes set in hero.ts:
+     - dark theme  -> additive   (ONE, ONE)               bright lines/dots
+     - light theme -> normal over(ONE, ONE_MINUS_SRC_ALPHA) black lines/dots
+
+   TUNE via the uniforms set in hero.ts (warp tunables, colors, alphas), or edit
+   warp() below directly.
 =========================================================================== */
 
 export const VERT_SRC = /* glsl */ `#version 300 es
@@ -87,23 +92,24 @@ precision highp float;
 
 in  float v_intensity;
 uniform float u_mode;        // 0.0 = grid line, 1.0 = star point
-uniform vec3  u_colorStar;   // star tint  (blue-white)
-uniform vec3  u_colorGrid;   // grid tint  (lattice blue)
+uniform vec3  u_colorStar;   // star/dot tint
+uniform vec3  u_colorGrid;   // grid-line tint
+uniform float u_starAlpha;   // overall dot opacity   (theme-dependent)
+uniform float u_gridAlpha;   // overall line opacity  (theme-dependent)
 out vec4 fragColor;
 
-// Output is PREMULTIPLIED alpha and blended additively (ONE, ONE) in hero.ts,
-// so the canvas composites cleanly over the CSS deep-space gradient.
+// Output is PREMULTIPLIED alpha; hero.ts picks the blend equation per theme.
 void main() {
   if (u_mode > 0.5) {
     // Soft round star: radial falloff from the point-sprite center.
     vec2  uv   = gl_PointCoord - 0.5;
     float glow = smoothstep(0.5, 0.0, length(uv)); // 1 at center -> 0 at edge
     glow *= glow;                                   // tighten the core
-    float a = glow * v_intensity;
+    float a = glow * v_intensity * u_starAlpha;
     fragColor = vec4(u_colorStar * a, a);
   } else {
-    // Grid line: flat, dim, depth-faded.
-    float a = v_intensity * 0.55;
+    // Grid line: flat, depth-faded.
+    float a = v_intensity * u_gridAlpha;
     fragColor = vec4(u_colorGrid * a, a);
   }
 }

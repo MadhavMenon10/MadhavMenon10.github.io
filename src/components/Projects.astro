@@ -1,15 +1,15 @@
 ---
 import { site } from '../data/site';
 import ProjectCard from './ProjectCard.astro';
-import Pipeline from './Pipeline.astro';
+import GpuDiagram from './GpuDiagram.astro';
 ---
 
-<section id="projects" class="reveal mx-auto max-w-3xl px-4 py-24 sm:px-6" data-reveal>
+<section id="projects" class="reveal border-t border-border/60 py-9" data-reveal>
   <h2 class="mb-8 font-mono text-sm text-accent">
     <span class="text-fg-dim">~/</span>projects
   </h2>
 
-  <Pipeline />
+  <GpuDiagram />
 
   <div class="grid gap-4 sm:grid-cols-2">
     {site.projects.map((project) => <ProjectCard project={project} />)}

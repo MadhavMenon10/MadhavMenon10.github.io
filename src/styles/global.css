@@ -1,21 +1,18 @@
 @import "tailwindcss";
 
 /* ===========================================================================
-   Theme variant
-   Enable `dark:` utilities whenever <html data-theme="dark"> is set.
-   Dark is the primary theme; light is the inverted variant.
+   Theme variant — enable `dark:` utilities under <html data-theme="dark">.
 =========================================================================== */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* ===========================================================================
-   Design tokens
-   Dark defaults on :root; light overrides under [data-theme="light"].
-   Components reference these via Tailwind utilities (see @theme inline below),
-   so the theme toggle only has to flip the data-theme attribute.
+   Design tokens. Dark defaults on :root; light overrides under
+   [data-theme="light"]. Components reference these via Tailwind utilities
+   (see @theme inline) so the toggle only flips the data-theme attribute.
 =========================================================================== */
 :root {
   --bg:            #07080f; /* deep space navy/black */
-  --bg-elev:       #0d0f1a; /* cards / raised surfaces   */
+  --bg-elev:       #0d0f1a;
   --bg-elev-hover: #111525;
   --border:        #1c1f30;
   --border-hover:  #2a2e48;
@@ -23,10 +20,27 @@
   --fg-dim:        #828aa3;
   --accent:        #4ade80; /* terminal / compute green */
   --accent-dim:    #2b5e41;
-  --grid:          rgba(110, 168, 254, 0.10); /* spacetime-grid blue */
-  --star:          rgba(220, 230, 255, 0.95);
 
   --nav-h: 3.25rem;
+
+  /* terminal window (translucent so the grid shows through) */
+  --term-bg:     rgba(11, 13, 22, 0.70);
+  --term-bar:    rgba(7, 9, 15, 0.82);
+  --term-shadow: rgba(0, 0, 0, 0.70);
+  --term-inset:  rgba(255, 255, 255, 0.04);
+
+  /* SM diagram palette */
+  --sm-bg:        rgba(8, 11, 18, 0.45);
+  --sm-block-bg:  rgba(13, 18, 28, 0.55);
+  --sm-edge:      #1b2233;
+  --sm-cyan:      #6fd6c6; --sm-cyan-bd:  rgba(60, 180, 165, 0.45); --sm-cyan-bg:  rgba(45, 150, 135, 0.10);
+  --sm-olive:     #c2cf6b; --sm-olive-bd: rgba(160, 180, 70, 0.40); --sm-olive-bg: rgba(150, 170, 60, 0.10);
+  --sm-int:       #88c8bf; --sm-int-bd:   rgba(55, 120, 110, 0.40); --sm-int-bg:   rgba(40, 95, 88, 0.14);
+  --sm-fp32:      #8ed99b; --sm-fp32-bd:  rgba(60, 140, 90, 0.40);  --sm-fp32-bg:  rgba(45, 110, 70, 0.14);
+  --sm-fp64:      #79c9bf; --sm-fp64-bd:  rgba(55, 135, 125, 0.40); --sm-fp64-bg:  rgba(40, 105, 98, 0.14);
+  --sm-tensor:    #aee7bd; --sm-tensor-bd:rgba(60, 150, 85, 0.50);  --sm-tensor-bg:rgba(20, 60, 32, 0.55);
+  --sm-ldst:      #c4a6e0; --sm-ldst-bd:  rgba(110, 80, 150, 0.45); --sm-ldst-bg:  rgba(70, 45, 100, 0.28);
+  --sm-sfu:       #aeb4c4; --sm-sfu-bd:   rgba(90, 95, 115, 0.45);  --sm-sfu-bg:   rgba(60, 62, 78, 0.30);
 }
 
 [data-theme="light"] {
@@ -39,17 +53,26 @@
   --fg-dim:        #545b75;
   --accent:        #0f766e; /* deep teal — readable on light */
   --accent-dim:    #8fc3bd;
-  --grid:          rgba(60, 70, 120, 0.08);
-  --star:          rgba(40, 50, 90, 0.55);
+
+  --term-bg:     rgba(255, 255, 255, 0.78);
+  --term-bar:    rgba(240, 242, 247, 0.90);
+  --term-shadow: rgba(40, 50, 90, 0.22);
+  --term-inset:  rgba(255, 255, 255, 0.60);
+
+  --sm-bg:        rgba(255, 255, 255, 0.50);
+  --sm-block-bg:  rgba(248, 250, 253, 0.72);
+  --sm-edge:      #d6dae8;
+  --sm-cyan:      #0e7c70; --sm-cyan-bd:  rgba(15, 118, 110, 0.45); --sm-cyan-bg:  rgba(15, 118, 110, 0.09);
+  --sm-olive:     #6c7718; --sm-olive-bd: rgba(120, 135, 30, 0.40); --sm-olive-bg: rgba(120, 135, 30, 0.09);
+  --sm-int:       #15705f; --sm-int-bd:   rgba(20, 120, 100, 0.32); --sm-int-bg:   rgba(20, 120, 100, 0.08);
+  --sm-fp32:      #1c7a3e; --sm-fp32-bd:  rgba(30, 140, 70, 0.32);  --sm-fp32-bg:  rgba(30, 140, 70, 0.08);
+  --sm-fp64:      #0f7a6e; --sm-fp64-bd:  rgba(15, 130, 115, 0.32); --sm-fp64-bg:  rgba(15, 130, 115, 0.08);
+  --sm-tensor:    #145e2c; --sm-tensor-bd:rgba(30, 120, 60, 0.45);  --sm-tensor-bg:rgba(30, 130, 65, 0.14);
+  --sm-ldst:      #5a3a90; --sm-ldst-bd:  rgba(110, 80, 160, 0.35); --sm-ldst-bg:  rgba(110, 80, 160, 0.10);
+  --sm-sfu:       #474d60; --sm-sfu-bd:   rgba(80, 85, 110, 0.32);  --sm-sfu-bg:   rgba(80, 85, 110, 0.09);
 }
 
-/* ===========================================================================
-   Map tokens onto Tailwind's theme.
-   `inline` makes utilities emit `var(--token)` directly, so changing the
-   variables under [data-theme] live-switches every utility.
-   Generates: bg-bg, bg-bg-elev, text-fg, text-fg-dim, text-accent,
-   border-border, border-border-hover, font-mono, font-sans, ...
-=========================================================================== */
+/* Tokens -> Tailwind utilities (inline = emits var(), so themes switch live). */
 @theme inline {
   --color-bg:            var(--bg);
   --color-bg-elev:       var(--bg-elev);
@@ -70,7 +93,7 @@
 =========================================================================== */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--nav-h) + 1rem); /* anchors clear the nav */
+  scroll-padding-top: calc(var(--nav-h) + 1rem);
 }
 
 body {
@@ -83,19 +106,14 @@ body {
   transition: background-color 0.22s ease, color 0.22s ease;
 }
 
-/* Consistent, visible keyboard focus everywhere */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-/* Anchored sections clear the fixed nav when jumped to */
-section[id] {
-  scroll-margin-top: calc(var(--nav-h) + 1rem);
-}
+section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 
-/* Skip link — visible only on focus */
 .skip-link {
   position: fixed;
   top: -120%;
@@ -109,120 +127,215 @@ section[id] {
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
-.skip-link:focus {
-  top: 1rem;
-}
+.skip-link:focus { top: 1rem; }
 
 /* ===========================================================================
-   Hero background
-   Static deep-space gradient. This is the base layer AND the fallback for
-   no-JS / reduced-motion / unsupported-WebGL. The <canvas> (added later)
-   layers on top of it.
+   Full-page background — WebGL grid canvas over a CSS deep-space gradient.
+   Fixed and behind all content; the gradient is the no-JS / reduced-motion /
+   unsupported-WebGL fallback. Visible in BOTH themes (light renders black).
 =========================================================================== */
-.hero-bg {
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.site-gradient {
   position: absolute;
   inset: 0;
-  z-index: 0;
   background:
     radial-gradient(120% 85% at 50% -10%, rgba(110, 168, 254, 0.12), transparent 60%),
     radial-gradient(90% 90% at 78% 25%, rgba(74, 222, 128, 0.06), transparent 55%),
     linear-gradient(180deg, #04050a 0%, var(--bg) 72%);
 }
-[data-theme="light"] .hero-bg {
+[data-theme="light"] .site-gradient {
   background:
-    radial-gradient(120% 85% at 50% -10%, rgba(15, 118, 110, 0.10), transparent 60%),
+    radial-gradient(120% 85% at 50% -10%, rgba(15, 118, 110, 0.08), transparent 60%),
     radial-gradient(90% 90% at 78% 25%, rgba(57, 73, 171, 0.05), transparent 55%),
     linear-gradient(180deg, #ffffff 0%, var(--bg) 80%);
 }
-
-.hero-canvas {
+#grid-canvas {
   position: absolute;
   inset: 0;
-  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
 }
 
 /* ===========================================================================
-   Scroll-reveal primitive (driven by reveal.ts in a later phase)
-   Default = offset/hidden; .in-view (added by IntersectionObserver) = shown.
+   Terminal window — frames the main content, tinted so the grid shows through.
 =========================================================================== */
-/* Gated by .js (set by the head bootstrap) so content is fully visible when
-   JavaScript is disabled. */
+.terminal {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--term-bg);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  box-shadow:
+    0 24px 70px -28px var(--term-shadow),
+    inset 0 1px 0 var(--term-inset);
+  overflow: hidden;
+}
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--term-bar);
+}
+.terminal-dots { display: inline-flex; gap: 7px; }
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.terminal-title {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: var(--fg-dim);
+}
+.terminal-body { padding: clamp(1.25rem, 3.5vw, 2.5rem); }
+
+/* ===========================================================================
+   SM (streaming multiprocessor) diagram — GpuDiagram.astro
+=========================================================================== */
+.gpu { margin-bottom: 2.5rem; }
+.gpu-scroll { overflow-x: auto; padding-bottom: 4px; }
+
+.gpu-sm {
+  min-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid var(--sm-edge);
+  border-radius: 10px;
+  background: var(--sm-bg);
+}
+.gpu-cache {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid var(--sm-cyan-bd);
+  background: var(--sm-cyan-bg);
+  color: var(--sm-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+.gpu-quad {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+.gpu-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px;
+  border: 1px solid var(--sm-edge);
+  border-radius: 7px;
+  background: var(--sm-block-bg);
+}
+.gpu-bar {
+  padding: 4px;
+  border-radius: 3px;
+  border: 1px solid;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.gpu-l0,
+.gpu-reg { color: var(--sm-cyan); border-color: var(--sm-cyan-bd); background: var(--sm-cyan-bg); }
+.gpu-reg { padding: 6px 4px; }
+.gpu-warp,
+.gpu-dispatch { color: var(--sm-olive); border-color: var(--sm-olive-bd); background: var(--sm-olive-bg); }
+
+.gpu-cores { display: flex; gap: 3px; }
+.gpu-col { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.gpu-fp64 { flex: 1.7; }
+.gpu-col span {
+  padding: 2.5px 0;
+  border: 1px solid;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.46rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.gpu-int span  { color: var(--sm-int);  border-color: var(--sm-int-bd);  background: var(--sm-int-bg); }
+.gpu-fp32 span { color: var(--sm-fp32); border-color: var(--sm-fp32-bd); background: var(--sm-fp32-bg); }
+.gpu-fp64 span { color: var(--sm-fp64); border-color: var(--sm-fp64-bd); background: var(--sm-fp64-bg); }
+
+.gpu-tensor {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--sm-tensor-bd);
+  border-radius: 3px;
+  background: var(--sm-tensor-bg);
+  color: var(--sm-tensor);
+  text-align: center;
+}
+.gpu-tensor-t { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 600; }
+.gpu-tensor-s { font-family: var(--font-mono); font-size: 0.5rem; opacity: 0.8; }
+
+.gpu-units { display: flex; gap: 3px; }
+.gpu-units span {
+  padding: 4px 0;
+  border: 1px solid;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  text-align: center;
+}
+.gpu-ldst { flex: 1; color: var(--sm-ldst); border-color: var(--sm-ldst-bd); background: var(--sm-ldst-bg); }
+.gpu-sfu  { flex: 2; color: var(--sm-sfu);  border-color: var(--sm-sfu-bd);  background: var(--sm-sfu-bg); }
+
+.gpu-cap {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--fg-dim);
+}
+
+/* ===========================================================================
+   Scroll-reveal (reveal.ts adds .in-view). Gated by .js so content is fully
+   visible when JavaScript is disabled.
+=========================================================================== */
 html.js .reveal {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-html.js .reveal.in-view {
-  opacity: 1;
-  transform: none;
-}
+html.js .reveal.in-view { opacity: 1; transform: none; }
 
-/* ===========================================================================
-   GPU pipeline diagram (Pipeline.astro)
-   CSS-only packet flow + staged reveal, triggered by `.in-view` (reveal.ts).
-   currentColor (= accent) drives the connector wires and arrowheads.
-   transform-box: view-box keeps SVG transforms in user units, so packets line
-   up with the stage boxes regardless of the rendered size.
-=========================================================================== */
-.pipeline { color: var(--accent); }
-
-.pipeline .stage rect {
-  fill: var(--bg-elev);
-  stroke: var(--border);
-  stroke-width: 1.5;
-}
-.pipeline .stage-title {
-  fill: var(--fg);
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 600;
-  text-anchor: middle;
-}
-.pipeline .stage-sub {
-  fill: var(--fg-dim);
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.05em;
-  text-anchor: middle;
-}
-
-.packet {
-  fill: var(--accent);
+/* SM diagram: staggered block reveal + subtle scheduler activity pulse */
+html.js .gpu .gpu-block {
   opacity: 0;
-  transform-box: view-box;
-}
-
-/* Staged reveal of the three boxes (JS only; visible by default without JS) */
-html.js .pipeline .stages .stage {
-  opacity: 0;
-  transform: translateY(8px);
-  transform-box: view-box;
+  transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
-html.js .pipeline.in-view .stages .stage { opacity: 1; transform: none; }
-html.js .pipeline.in-view .stages .stage:nth-child(2) { transition-delay: 0.12s; }
-html.js .pipeline.in-view .stages .stage:nth-child(3) { transition-delay: 0.24s; }
+html.js .gpu.in-view .gpu-block { opacity: 1; transform: none; }
+html.js .gpu.in-view .gpu-block:nth-child(2) { transition-delay: 0.08s; }
+html.js .gpu.in-view .gpu-block:nth-child(3) { transition-delay: 0.16s; }
+html.js .gpu.in-view .gpu-block:nth-child(4) { transition-delay: 0.24s; }
 
-/* Data packets flowing left -> right through the pipeline */
-@keyframes packet-flow {
-  0%   { transform: translateX(0);     opacity: 0; }
-  6%   { opacity: 1; }
-  94%  { opacity: 1; }
-  100% { transform: translateX(572px); opacity: 0; }
-}
-html.js .pipeline.in-view .packet { animation: packet-flow 3.4s linear infinite; }
-html.js .pipeline.in-view .packet:nth-child(2) { animation-delay: 0.7s; }
-html.js .pipeline.in-view .packet:nth-child(3) { animation-delay: 1.4s; }
-html.js .pipeline.in-view .packet:nth-child(4) { animation-delay: 2.1s; }
-html.js .pipeline.in-view .packet:nth-child(5) { animation-delay: 2.8s; }
+@keyframes warp-pulse { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+html.js .gpu.in-view .gpu-warp { animation: warp-pulse 2.4s ease-in-out infinite; }
 
 /* ===========================================================================
-   Reduced motion
-   Kill smooth scroll, transitions, and reveal offsets so the page is fully
-   usable with animations off.
+   Reduced motion — kill smooth scroll, transitions, and reveal offsets so the
+   page is fully usable with animations off.
 =========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -233,6 +346,6 @@ html.js .pipeline.in-view .packet:nth-child(5) { animation-delay: 2.8s; }
   }
   .reveal,
   html.js .reveal { opacity: 1; transform: none; }
-  html.js .pipeline .stages .stage { opacity: 1; transform: none; }
-  .packet { display: none; }
+  html.js .gpu .gpu-block { opacity: 1; transform: none; }
+  html.js .gpu .gpu-warp { opacity: 1; }
 }
