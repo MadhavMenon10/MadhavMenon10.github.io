@@ -1,0 +1,27 @@
+---
+import { site } from '../data/site';
+---
+
+<section id="links" class="reveal mx-auto max-w-3xl px-4 py-12 sm:px-6" data-reveal>
+  <h2 class="mb-6 font-mono text-sm text-accent">
+    <span class="text-fg-dim">~/</span>links
+  </h2>
+
+  <ul class="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
+    {
+      site.links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="group text-fg-dim transition-colors hover:text-accent"
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+          >
+            <span class="text-accent-dim transition-colors group-hover:text-accent">/ </span>
+            {link.label.toLowerCase()}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

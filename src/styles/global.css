@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+/* ===========================================================================
+   Theme variant
+   Enable `dark:` utilities whenever <html data-theme="dark"> is set.
+   Dark is the primary theme; light is the inverted variant.
+=========================================================================== */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ===========================================================================
+   Design tokens
+   Dark defaults on :root; light overrides under [data-theme="light"].
+   Components reference these via Tailwind utilities (see @theme inline below),
+   so the theme toggle only has to flip the data-theme attribute.
+=========================================================================== */
+:root {
+  --bg:            #07080f; /* deep space navy/black */
+  --bg-elev:       #0d0f1a; /* cards / raised surfaces   */
+  --bg-elev-hover: #111525;
+  --border:        #1c1f30;
+  --border-hover:  #2a2e48;
+  --fg:            #d7dbe8;
+  --fg-dim:        #828aa3;
+  --accent:        #4ade80; /* terminal / compute green */
+  --accent-dim:    #2b5e41;
+  --grid:          rgba(110, 168, 254, 0.10); /* spacetime-grid blue */
+  --star:          rgba(220, 230, 255, 0.95);
+
+  --nav-h: 3.25rem;
+}
+
+[data-theme="light"] {
+  --bg:            #f6f7f9;
+  --bg-elev:       #ffffff;
+  --bg-elev-hover: #eef1f8;
+  --border:        #dde0ed;
+  --border-hover:  #b3bad6;
+  --fg:            #14161f;
+  --fg-dim:        #545b75;
+  --accent:        #0f766e; /* deep teal — readable on light */
+  --accent-dim:    #8fc3bd;
+  --grid:          rgba(60, 70, 120, 0.08);
+  --star:          rgba(40, 50, 90, 0.55);
+}
+
+/* ===========================================================================
+   Map tokens onto Tailwind's theme.
+   `inline` makes utilities emit `var(--token)` directly, so changing the
+   variables under [data-theme] live-switches every utility.
+   Generates: bg-bg, bg-bg-elev, text-fg, text-fg-dim, text-accent,
+   border-border, border-border-hover, font-mono, font-sans, ...
+=========================================================================== */
+@theme inline {
+  --color-bg:            var(--bg);
+  --color-bg-elev:       var(--bg-elev);
+  --color-bg-elev-hover: var(--bg-elev-hover);
+  --color-border:        var(--border);
+  --color-border-hover:  var(--border-hover);
+  --color-fg:            var(--fg);
+  --color-fg-dim:        var(--fg-dim);
+  --color-accent:        var(--accent);
+  --color-accent-dim:    var(--accent-dim);
+
+  --font-sans: "Inter Variable", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ===========================================================================
+   Base
+=========================================================================== */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 1rem); /* anchors clear the nav */
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.22s ease, color 0.22s ease;
+}
+
+/* Consistent, visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Anchored sections clear the fixed nav when jumped to */
+section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
+}
+
+/* Skip link — visible only on focus */
+.skip-link {
+  position: fixed;
+  top: -120%;
+  left: 1rem;
+  z-index: 200;
+  padding: 0.5rem 0.875rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ===========================================================================
+   Hero background
+   Static deep-space gradient. This is the base layer AND the fallback for
+   no-JS / reduced-motion / unsupported-WebGL. The <canvas> (added later)
+   layers on top of it.
+=========================================================================== */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(120% 85% at 50% -10%, rgba(110, 168, 254, 0.12), transparent 60%),
+    radial-gradient(90% 90% at 78% 25%, rgba(74, 222, 128, 0.06), transparent 55%),
+    linear-gradient(180deg, #04050a 0%, var(--bg) 72%);
+}
+[data-theme="light"] .hero-bg {
+  background:
+    radial-gradient(120% 85% at 50% -10%, rgba(15, 118, 110, 0.10), transparent 60%),
+    radial-gradient(90% 90% at 78% 25%, rgba(57, 73, 171, 0.05), transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, var(--bg) 80%);
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===========================================================================
+   Scroll-reveal primitive (driven by reveal.ts in a later phase)
+   Default = offset/hidden; .in-view (added by IntersectionObserver) = shown.
+=========================================================================== */
+/* Gated by .js (set by the head bootstrap) so content is fully visible when
+   JavaScript is disabled. */
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+html.js .reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===========================================================================
+   GPU pipeline diagram (Pipeline.astro)
+   CSS-only packet flow + staged reveal, triggered by `.in-view` (reveal.ts).
+   currentColor (= accent) drives the connector wires and arrowheads.
+   transform-box: view-box keeps SVG transforms in user units, so packets line
+   up with the stage boxes regardless of the rendered size.
+=========================================================================== */
+.pipeline { color: var(--accent); }
+
+.pipeline .stage rect {
+  fill: var(--bg-elev);
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+.pipeline .stage-title {
+  fill: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+.pipeline .stage-sub {
+  fill: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-anchor: middle;
+}
+
+.packet {
+  fill: var(--accent);
+  opacity: 0;
+  transform-box: view-box;
+}
+
+/* Staged reveal of the three boxes (JS only; visible by default without JS) */
+html.js .pipeline .stages .stage {
+  opacity: 0;
+  transform: translateY(8px);
+  transform-box: view-box;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+html.js .pipeline.in-view .stages .stage { opacity: 1; transform: none; }
+html.js .pipeline.in-view .stages .stage:nth-child(2) { transition-delay: 0.12s; }
+html.js .pipeline.in-view .stages .stage:nth-child(3) { transition-delay: 0.24s; }
+
+/* Data packets flowing left -> right through the pipeline */
+@keyframes packet-flow {
+  0%   { transform: translateX(0);     opacity: 0; }
+  6%   { opacity: 1; }
+  94%  { opacity: 1; }
+  100% { transform: translateX(572px); opacity: 0; }
+}
+html.js .pipeline.in-view .packet { animation: packet-flow 3.4s linear infinite; }
+html.js .pipeline.in-view .packet:nth-child(2) { animation-delay: 0.7s; }
+html.js .pipeline.in-view .packet:nth-child(3) { animation-delay: 1.4s; }
+html.js .pipeline.in-view .packet:nth-child(4) { animation-delay: 2.1s; }
+html.js .pipeline.in-view .packet:nth-child(5) { animation-delay: 2.8s; }
+
+/* ===========================================================================
+   Reduced motion
+   Kill smooth scroll, transitions, and reveal offsets so the page is fully
+   usable with animations off.
+=========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal,
+  html.js .reveal { opacity: 1; transform: none; }
+  html.js .pipeline .stages .stage { opacity: 1; transform: none; }
+  .packet { display: none; }
+}

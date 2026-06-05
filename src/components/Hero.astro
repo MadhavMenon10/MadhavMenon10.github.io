@@ -1,0 +1,46 @@
+---
+import { site } from '../data/site';
+---
+
+<section
+  id="top"
+  class="hero relative flex min-h-[100svh] items-center overflow-hidden"
+>
+  <!-- Static deep-space gradient: the no-JS / reduced-motion / fallback layer. -->
+  <div class="hero-bg" aria-hidden="true"></div>
+
+  <!--
+    WebGL star field mounts onto this canvas in a later phase. It is purely
+    decorative (aria-hidden) and layers over the gradient, staying transparent
+    until hydrated — so the hero looks correct even with no JS.
+  -->
+  <canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
+
+  <div class="relative z-10 mx-auto w-full max-w-3xl px-4 sm:px-6">
+    <p class="mb-4 font-mono text-xs text-accent sm:text-sm">{site.role}</p>
+
+    <h1
+      class="font-mono text-4xl font-bold leading-[1.05] tracking-tight text-fg sm:text-6xl"
+    >
+      {site.name}
+    </h1>
+
+    <p class="mt-5 max-w-xl font-mono text-sm text-fg-dim sm:text-base">
+      {site.tagline}
+    </p>
+
+    <div class="mt-10">
+      <a
+        href="#about"
+        class="font-mono text-xs text-fg-dim transition-colors hover:text-accent"
+      >
+        &#8595; scroll
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initHero } from '../scripts/hero';
+  initHero();
+</script>

@@ -1,0 +1,35 @@
+---
+// Toggle is progressive enhancement: the inline script in Base.astro has
+// already set the correct theme before this button's script runs.
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  aria-label="Toggle color theme"
+  class="rounded border border-border px-2 py-1 font-mono text-xs text-fg-dim transition-colors hover:border-accent hover:text-fg"
+>
+  [&nbsp;<span class="theme-name text-accent">dark</span>&nbsp;]
+</button>
+
+<script>
+  const btn = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  const label = btn?.querySelector('.theme-name');
+
+  const sync = () => {
+    if (label) label.textContent = root.getAttribute('data-theme') || 'dark';
+  };
+  sync();
+
+  btn?.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch (_) {
+      /* localStorage unavailable (private mode) — theme still applies for the session */
+    }
+    sync();
+  });
+</script>
