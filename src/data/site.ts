@@ -1,9 +1,9 @@
 /* ===========================================================================
-   site.ts — single source of truth for page content.
+   site.ts — site-wide content and config.
 
-   Edit THIS file (plus the Markdown in src/content/writing/) to update the
-   site; no component edits required. Items marked TODO are placeholders —
-   replace them with real content.
+   Projects and writing posts are Markdown collections (src/content/projects/
+   and src/content/writing/). Everything else — name, tagline, bio, links, and
+   the GPU-diagram map — lives here. Items marked TODO are placeholders.
 =========================================================================== */
 
 export interface NavItem {
@@ -21,18 +21,9 @@ export interface LinkItem {
 }
 
 /** GPU core type a project "runs on" — drives the interactive SM-diagram filter.
-    int = systems/low-level · fp32 = ML/data · fp64 = science · tensor = AI/DL */
+    int = systems/low-level · fp32 = ML/data · fp64 = science · tensor = AI/DL.
+    Set per project in its frontmatter (src/content/projects/*.md). */
 export type CoreUnit = 'int' | 'fp32' | 'fp64' | 'tensor';
-
-export interface Project {
-  title: string;
-  description: string;
-  tags: string[];
-  /** Project URL (repo, paper, demo). Optional — card is non-clickable if omitted. */
-  href?: string;
-  /** Which SM core type(s) this project maps to (for the diagram filter). */
-  units?: CoreUnit[];
-}
 
 export interface Site {
   name: string;
@@ -42,7 +33,6 @@ export interface Site {
   email: string;
   nav: NavItem[];
   links: LinkItem[];
-  projects: Project[];
 }
 
 export const site: Site = {
@@ -69,32 +59,6 @@ export const site: Site = {
     { label: 'LinkedIn', href: '#TODO', external: true },
     { label: 'GitHub', href: '#TODO', external: true },
     { label: 'Transcript', href: '#TODO' },
-  ],
-
-  // Scaffolded TODO cards — replace with real projects. `units` tags each
-  // project to a GPU core type so the interactive SM diagram can filter them.
-  projects: [
-    {
-      title: 'TODO: Systems / GPU project',
-      description: 'TODO: one or two sentences on the project and your role.',
-      tags: ['TODO', 'CUDA', 'C++'],
-      href: '#',
-      units: ['int'],
-    },
-    {
-      title: 'TODO: ML / AI project',
-      description: 'TODO: one or two sentences on the project and your role.',
-      tags: ['TODO', 'PyTorch'],
-      href: '#',
-      units: ['fp32', 'tensor'],
-    },
-    {
-      title: 'TODO: Scientific computing project',
-      description: 'TODO: one or two sentences on the project and your role.',
-      tags: ['TODO', 'Python', 'HPC'],
-      href: '#',
-      units: ['fp64'],
-    },
   ],
 };
 

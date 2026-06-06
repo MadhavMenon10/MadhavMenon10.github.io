@@ -1,7 +1,13 @@
 ---
-import { site } from '../data/site';
+import { getCollection } from 'astro:content';
 import ProjectCard from './ProjectCard.astro';
 import GpuDiagram from './GpuDiagram.astro';
+
+const projects = (
+  await getCollection('projects', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  )
+).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
 ---
 
 <section id="projects" class="reveal border-t border-border/60 py-9" data-reveal>
@@ -15,6 +21,6 @@ import GpuDiagram from './GpuDiagram.astro';
   <div id="project-filter" class="gpu-filterbar" hidden></div>
 
   <div id="project-grid" class="grid gap-4 sm:grid-cols-2">
-    {site.projects.map((project) => <ProjectCard project={project} />)}
+    {projects.map((project) => <ProjectCard project={project} />)}
   </div>
 </section>

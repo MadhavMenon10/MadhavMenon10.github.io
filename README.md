@@ -28,12 +28,13 @@ npm run check     # astro check, for types
 
 ## Editing content
 
-Most of what you'd want to change is in one file, `src/data/site.ts`. Name,
-tagline, bio, the row of links, the project cards. Anything labelled TODO is a
-placeholder I left for you to fill in.
+The basics live in one file, `src/data/site.ts`: name, tagline, bio, and the row
+of links. Anything labelled TODO is a placeholder.
 
-Writing posts are Markdown files in `src/content/writing/`. Add a file with
-frontmatter like this and the list picks it up automatically, newest first:
+Projects and writing are Markdown collections, one file per item, so you add to
+them without touching any components. A writing post is a file in
+`src/content/writing/`. Its frontmatter is the list entry and its body becomes
+the page the title links to. Newest first:
 
 ```
 ---
@@ -44,6 +45,11 @@ link: "https://example.com/the-post"   # optional, sends the title somewhere
 draft: false
 ---
 ```
+
+Projects work the same way in `src/content/projects/`. The frontmatter has
+`title`, `description`, `tags`, an optional `github` link, and `units` (the GPU
+core types it belongs to, used by the diagram filter). The card shows that, plus
+a github icon and a "read more" link, and the body is the page "read more" opens.
 
 Drafts stay hidden in production builds. Resume, headshot, and anything else
 static go in `public/` and are served from the root, so `public/resume.pdf` is
@@ -60,7 +66,8 @@ the SFU goes to Writing, and the memory accelerator opens an email.
 
 If you want to rewire any of that, the `gpu` block at the bottom of
 `src/data/site.ts` is where the unit to destination mapping lives. To file a
-project under a core type, give it a `units` array, for example `units: ['fp64']`.
+project under a core type, set `units` in its frontmatter, for example
+`units: ["fp64"]`.
 
 None of it depends on JavaScript. The units are real links, so with JS off they
 still navigate and you only lose the filtering. It's keyboard friendly too.
