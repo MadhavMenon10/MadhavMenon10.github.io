@@ -298,7 +298,20 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
   text-align: center;
 }
 .gpu-ldst { flex: 1; color: var(--sm-ldst); border-color: var(--sm-ldst-bd); background: var(--sm-ldst-bg); }
-.gpu-sfu  { flex: 2; color: var(--sm-sfu);  border-color: var(--sm-sfu-bd);  background: var(--sm-sfu-bg); }
+.gpu-sfu {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  border: 1px solid var(--sm-sfu-bd);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  text-align: center;
+  color: var(--sm-sfu);
+  background: var(--sm-sfu-bg);
+}
 
 .gpu-cap {
   margin-top: 0.75rem;
@@ -307,6 +320,83 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
   font-size: 0.7rem;
   color: var(--fg-dim);
 }
+
+/* ---------------------------------------------------------------------------
+   Interactive SM map (gpu-map.ts): hover/click units to navigate + filter.
+--------------------------------------------------------------------------- */
+.gpu-hint {
+  margin-bottom: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--fg-dim);
+}
+.gpu-hint b { color: var(--accent); font-weight: 600; }
+
+/* interactive units (caches, core columns, tensor, ld/st group, sfu) */
+.gpu-u {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.gpu-u:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 2;
+}
+.gpu-u.unit-active {
+  box-shadow: 0 0 0 1px var(--accent), 0 0 16px -3px var(--accent);
+}
+.gpu-col.unit-active span { border-color: var(--accent); color: var(--fg); }
+.gpu-u.unit-selected { outline: 1px dashed var(--accent); outline-offset: 1px; }
+
+.gpu-ldst-group { display: flex; gap: 3px; flex: 8; }
+.gpu-ldst-group .gpu-ldst { flex: 1; }
+
+/* terminal-style readout under the diagram */
+.gpu-readout {
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--term-bar);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--fg);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.gpu-prompt { color: var(--accent); margin-right: 0.4rem; }
+.gpu-caret { color: var(--accent); animation: gpu-blink 1.1s steps(1) infinite; }
+@keyframes gpu-blink { 50% { opacity: 0; } }
+
+/* active project-filter chip */
+.gpu-filterbar { margin-bottom: 1rem; }
+.gpu-filterbar .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.2rem 0.25rem 0.7rem;
+  border: 1px solid var(--accent-dim);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--fg-dim);
+}
+.gpu-filterbar .chip b { color: var(--accent); }
+.chip-x {
+  display: inline-flex;
+  padding: 0 0.4rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+}
+.chip-x:hover { color: var(--accent); }
+
+.is-hidden { display: none !important; }
 
 /* ===========================================================================
    Scroll-reveal (reveal.ts adds .in-view). Gated by .js so content is fully

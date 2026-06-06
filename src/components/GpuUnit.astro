@@ -1,0 +1,36 @@
+---
+/*
+  One interactive unit in the SM diagram. Renders as a real <a> (so it works
+  with JS disabled) for the "representative" instance of each unit type, and as
+  an aria-hidden, non-tabbable <div> for duplicate instances across the 4 blocks
+  (still mouse-clickable + highlightable via event delegation in gpu-map.ts).
+*/
+import type { GpuUnitDef } from '../data/site';
+
+interface Props {
+  unit: string;        // data-unit id (e.g. "fp64")
+  meta: GpuUnitDef;    // label / desc / cmd / kind / target
+  href: string;        // resolved href for the no-JS fallback
+  rep?: boolean;       // representative instance (focusable + labeled)
+  cls?: string;        // extra classes (e.g. "gpu-col gpu-fp64")
+}
+
+const { unit, meta, href, rep = false, cls = '' } = Astro.props;
+const Tag = rep ? 'a' : 'div';
+---
+
+<Tag
+  class:list={['gpu-u', cls]}
+  data-unit={unit}
+  data-kind={meta.kind}
+  data-target={meta.target}
+  data-cmd={meta.cmd}
+  data-desc={meta.desc}
+  data-label={meta.label}
+  href={rep ? href : undefined}
+  aria-label={rep ? `${meta.label} — ${meta.desc}` : undefined}
+  aria-hidden={rep ? undefined : 'true'}
+  tabindex={rep ? undefined : -1}
+>
+  <slot />
+</Tag>

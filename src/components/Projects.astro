@@ -11,7 +11,10 @@ import GpuDiagram from './GpuDiagram.astro';
 
   <GpuDiagram />
 
-  <div class="grid gap-4 sm:grid-cols-2">
+  <!-- Active filter chip (populated by gpu-map.ts when a core type is clicked) -->
+  <div id="project-filter" class="gpu-filterbar" hidden></div>
+
+  <div id="project-grid" class="grid gap-4 sm:grid-cols-2">
     {site.projects.map((project) => <ProjectCard project={project} />)}
   </div>
 </section>

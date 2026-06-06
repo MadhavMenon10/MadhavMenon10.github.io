@@ -6,11 +6,12 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, description, tags, href } = project;
+const { title, description, tags, href, units } = project;
 ---
 
 <article
   class="group relative rounded-lg border border-border bg-bg-elev p-5 transition-colors hover:border-border-hover hover:bg-bg-elev-hover"
+  data-units={units?.join(' ')}
 >
   {
     href && (

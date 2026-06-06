@@ -89,6 +89,24 @@ Degradation: no WebGL2, low-power devices, and `prefers-reduced-motion` fall
 back to the static CSS gradient. The terminal uses `backdrop-filter` — if you
 hit jank on low-end GPUs, raise the `--term-bg` opacity and drop the blur.
 
+## Interactive SM diagram
+
+The streaming-multiprocessor diagram in the projects section is an interactive
+map of the site (`GpuDiagram.astro` + [`src/scripts/gpu-map.ts`](src/scripts/gpu-map.ts)):
+
+- **Core types filter the projects.** Hover/click **INT32 / FP32 / FP64 /
+  Tensor Core** to filter the grid by domain. Tag each project in `site.ts`
+  with `units` (`'int' | 'fp32' | 'fp64' | 'tensor'`).
+- **Other units navigate.** L1 I-Cache → About, LD/ST → Links, SFU → Writing,
+  Tensor Memory Accelerator → email.
+- The whole unit → destination mapping is the `gpu` config in
+  [`src/data/site.ts`](src/data/site.ts) — edit labels, commands, and targets there.
+
+Built progressively: every unit is a real link, so it still navigates with
+JavaScript disabled (filtering just falls back to "show all"); one instance per
+type is keyboard-focusable and ARIA-labeled, and highlighting is color-only
+under `prefers-reduced-motion`.
+
 ## Project structure
 
 ```
@@ -97,7 +115,7 @@ src/
 ├─ content/                # "writing" collection (Markdown posts) + schema
 ├─ layouts/Base.astro      # HTML shell, head, theme bootstrap, nav/footer
 ├─ components/             # Hero, Terminal, About, Links, Projects, Writing, GpuDiagram, …
-├─ scripts/                # hero (WebGL2 grid bg), gl-shaders, gl-math, reveal
+├─ scripts/                # hero (WebGL2 grid bg), gl-shaders, gl-math, reveal, gpu-map
 ├─ styles/global.css       # Tailwind entry + design tokens + keyframes
 └─ pages/index.astro       # single-page assembly
 public/                    # static assets (favicon, resume, images, .nojekyll)

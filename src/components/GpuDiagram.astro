@@ -1,35 +1,48 @@
 ---
 /*
-  Streaming Multiprocessor (SM) block diagram — a stylized take on a modern
-  NVIDIA SM (Hopper-class: 4th-gen Tensor Cores + Tensor Memory Accelerator):
+  Interactive Streaming Multiprocessor (SM) "site map". A stylized modern NVIDIA
+  SM (Hopper-class) whose functional units are clickable: cores filter the
+  project grid by domain; other units jump to sections / email. See gpu-map.ts
+  for behavior and src/data/site.ts (`gpu`) for the unit -> destination mapping.
 
-    L1 Instruction Cache
-    └ 4 processing blocks, each:
-        L0 I-cache · Warp Scheduler · Dispatch · Register File
-        INT32 | FP32 | FP32 | FP64 cores + 4th-gen Tensor Core
-        LD/ST ×8 + SFU
-    Tensor Memory Accelerator
-
-  Pure HTML/CSS (styles in global.css). Staggered reveal via reveal.ts adding
-  `.in-view`; static & visible with no JS / prefers-reduced-motion.
+  Each unit type appears in all 4 processing blocks; the FIRST instance is the
+  keyboard-focusable, ARIA-labeled "representative" (real link, works with no
+  JS), the rest are aria-hidden duplicates (still mouse-clickable + highlight).
 */
+import { gpu } from '../data/site';
+import GpuUnit from './GpuUnit.astro';
+
 const blocks = [0, 1, 2, 3];
 const lanes = Array.from({ length: 16 });
 const ldst = Array.from({ length: 8 });
+
+const meta = Object.fromEntries(gpu.units.map((u) => [u.id, u]));
+const hrefFor = (id: string) => {
+  const u = meta[id];
+  if (u.kind === 'filter') return '#projects';
+  if (u.kind === 'mailto') return `mailto:${u.target}`;
+  return u.target;
+};
 ---
 
 <figure
   class="gpu"
   data-reveal
-  aria-label="Stylized NVIDIA streaming-multiprocessor block diagram: an L1 instruction cache feeds four processing blocks — each with a warp scheduler, dispatch unit, register file, INT32/FP32/FP64 cores and a 4th-generation tensor core, plus load/store units and a special-function unit — above a tensor memory accelerator."
+  aria-label="Interactive streaming-multiprocessor map. An L1 instruction cache, four processing blocks of INT32/FP32/FP64 cores and a 4th-gen tensor core, load/store units, an SFU, and a tensor memory accelerator — each links to part of the site; the core types filter the projects below."
 >
+  <p class="gpu-hint">
+    <b>// interactive</b> — hover or click a compute unit. cores filter projects; others jump.
+  </p>
+
   <div class="gpu-scroll">
     <div class="gpu-sm">
-      <div class="gpu-cache gpu-l1">L1 Instruction Cache</div>
+      <GpuUnit unit="l1" rep meta={meta.l1} href={hrefFor('l1')} cls="gpu-cache gpu-l1">
+        L1 Instruction Cache
+      </GpuUnit>
 
       <div class="gpu-quad">
         {
-          blocks.map(() => (
+          blocks.map((b) => (
             <div class="gpu-block">
               <div class="gpu-bar gpu-l0">L0 Instruction Cache</div>
               <div class="gpu-bar gpu-warp">Warp Scheduler (32 thread/clk)</div>
@@ -37,30 +50,54 @@ const ldst = Array.from({ length: 8 });
               <div class="gpu-bar gpu-reg">Register File (16,384 &times; 32-bit)</div>
 
               <div class="gpu-cores">
-                <div class="gpu-col gpu-int">{lanes.map(() => <span>INT32</span>)}</div>
-                <div class="gpu-col gpu-fp32">{lanes.map(() => <span>FP32</span>)}</div>
-                <div class="gpu-col gpu-fp32">{lanes.map(() => <span>FP32</span>)}</div>
-                <div class="gpu-col gpu-fp64">{lanes.map(() => <span>FP64</span>)}</div>
-                <div class="gpu-tensor">
+                <GpuUnit unit="int" rep={b === 0} meta={meta.int} href={hrefFor('int')} cls="gpu-col gpu-int">
+                  {lanes.map(() => <span>INT32</span>)}
+                </GpuUnit>
+                <GpuUnit unit="fp32" rep={b === 0} meta={meta.fp32} href={hrefFor('fp32')} cls="gpu-col gpu-fp32">
+                  {lanes.map(() => <span>FP32</span>)}
+                </GpuUnit>
+                <GpuUnit unit="fp32" rep={false} meta={meta.fp32} href={hrefFor('fp32')} cls="gpu-col gpu-fp32">
+                  {lanes.map(() => <span>FP32</span>)}
+                </GpuUnit>
+                <GpuUnit unit="fp64" rep={b === 0} meta={meta.fp64} href={hrefFor('fp64')} cls="gpu-col gpu-fp64">
+                  {lanes.map(() => <span>FP64</span>)}
+                </GpuUnit>
+                <GpuUnit unit="tensor" rep={b === 0} meta={meta.tensor} href={hrefFor('tensor')} cls="gpu-tensor">
                   <span class="gpu-tensor-t">TENSOR CORE</span>
                   <span class="gpu-tensor-s">4TH GEN</span>
-                </div>
+                </GpuUnit>
               </div>
 
               <div class="gpu-units">
-                {ldst.map(() => <span class="gpu-ldst">LD/ST</span>)}
-                <span class="gpu-sfu">SFU</span>
+                <GpuUnit unit="ldst" rep={b === 0} meta={meta.ldst} href={hrefFor('ldst')} cls="gpu-ldst-group">
+                  {ldst.map(() => <span class="gpu-ldst">LD/ST</span>)}
+                </GpuUnit>
+                <GpuUnit unit="sfu" rep={b === 0} meta={meta.sfu} href={hrefFor('sfu')} cls="gpu-sfu">
+                  SFU
+                </GpuUnit>
               </div>
             </div>
           ))
         }
       </div>
 
-      <div class="gpu-cache gpu-tma">Tensor Memory Accelerator</div>
+      <GpuUnit unit="tma" rep meta={meta.tma} href={hrefFor('tma')} cls="gpu-cache gpu-tma">
+        Tensor Memory Accelerator
+      </GpuUnit>
     </div>
   </div>
 
+  <div class="gpu-readout" aria-hidden="true">
+    <span class="gpu-prompt">madhav@portfolio:~$</span>
+    <span class="gpu-cmd">// hover a unit · click to run</span><span class="gpu-caret">&#9612;</span>
+  </div>
+
   <figcaption class="gpu-cap">
-    streaming multiprocessor — instruction cache → warps → cores → output
+    streaming multiprocessor — a clickable map of the site
   </figcaption>
 </figure>
+
+<script>
+  import { initGpuMap } from '../scripts/gpu-map';
+  initGpuMap();
+</script>
