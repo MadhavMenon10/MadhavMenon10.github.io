@@ -48,9 +48,9 @@ export interface Site {
 export const site: Site = {
   // Identity is prefilled from the repo owner; everything else is TODO.
   name: 'Madhav Menon',
-  role: 'Computer Science and Physics + Math @ UIUC',
+  role: 'TODO: role line — e.g. "CS + Physics @ University"',
   tagline: '// TODO: one-line tagline',
-  bio: 'I am a junior at UIUC. My current interests lie in GPU programming, high-performance computing, and ML/AI. I am currently interning at Valeo.',
+  bio: 'TODO: short bio — a few sentences on who you are and what you work on.',
   email: 'madhav4@illinois.edu',
 
   // Single-page anchor navigation.
@@ -65,35 +65,36 @@ export const site: Site = {
   // resume.pdf lives in /public (relocated from your old assets).
   links: [
     { label: 'Resume', href: '/resume.pdf' },
-    { label: 'Email', href: 'mailto:madhavanandmenon@gmail.com' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhav-anand-menon/', external: true },
-    { label: 'GitHub', href: 'https://github.com/MadhavMenon10', external: true },
+    { label: 'Email', href: 'mailto:madhav4@illinois.edu' },
+    { label: 'LinkedIn', href: '#TODO', external: true },
+    { label: 'GitHub', href: '#TODO', external: true },
+    { label: 'Transcript', href: '#TODO' },
   ],
 
   // Scaffolded TODO cards — replace with real projects. `units` tags each
   // project to a GPU core type so the interactive SM diagram can filter them.
   projects: [
-    // {
-    //   title: 'TODO: Systems / GPU project',
-    //   description: 'TODO: one or two sentences on the project and your role.',
-    //   tags: ['TODO', 'CUDA', 'C++'],
-    //   href: '#',
-    //   units: ['int'],
-    // },
-    // {
-    //   title: 'TODO: ML / AI project',
-    //   description: 'TODO: one or two sentences on the project and your role.',
-    //   tags: ['TODO', 'PyTorch'],
-    //   href: '#',
-    //   units: ['fp32', 'tensor'],
-    // },
-    // {
-    //   title: 'TODO: Scientific computing project',
-    //   description: 'TODO: one or two sentences on the project and your role.',
-    //   tags: ['TODO', 'Python', 'HPC'],
-    //   href: '#',
-    //   units: ['fp64'],
-    // },
+    {
+      title: 'TODO: Systems / GPU project',
+      description: 'TODO: one or two sentences on the project and your role.',
+      tags: ['TODO', 'CUDA', 'C++'],
+      href: '#',
+      units: ['int'],
+    },
+    {
+      title: 'TODO: ML / AI project',
+      description: 'TODO: one or two sentences on the project and your role.',
+      tags: ['TODO', 'PyTorch'],
+      href: '#',
+      units: ['fp32', 'tensor'],
+    },
+    {
+      title: 'TODO: Scientific computing project',
+      description: 'TODO: one or two sentences on the project and your role.',
+      tags: ['TODO', 'Python', 'HPC'],
+      href: '#',
+      units: ['fp64'],
+    },
   ],
 };
 

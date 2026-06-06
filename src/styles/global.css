@@ -398,6 +398,63 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 
 .is-hidden { display: none !important; }
 
+/* ---------------------------------------------------------------------------
+   Blog post pages (src/pages/writing/[...slug].astro) — rendered Markdown.
+--------------------------------------------------------------------------- */
+.post-back { margin-bottom: 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; }
+.post-back a { color: var(--fg-dim); text-decoration: none; }
+.post-back a:hover { color: var(--accent); }
+
+.post-date {
+  margin-bottom: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--fg-dim);
+}
+.post-title {
+  margin-bottom: 1.75rem;
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--fg);
+}
+
+.post-body { color: var(--fg); }
+.post-body p { margin: 0 0 1.1rem; line-height: 1.78; }
+.post-body h2 { margin: 2.1rem 0 0.8rem; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600; }
+.post-body h3 { margin: 1.6rem 0 0.6rem; font-family: var(--font-mono); font-size: 1.03rem; font-weight: 600; }
+.post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.post-body ul, .post-body ol { margin: 0 0 1.1rem; padding-left: 1.3rem; }
+.post-body li { margin: 0.3rem 0; line-height: 1.7; }
+.post-body li::marker { color: var(--fg-dim); }
+.post-body blockquote {
+  margin: 0 0 1.1rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--border);
+  color: var(--fg-dim);
+}
+.post-body :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.08rem 0.34rem;
+}
+.post-body pre {
+  margin: 0 0 1.2rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+}
+.post-body hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--border); }
+.post-body img { max-width: 100%; height: auto; border-radius: 8px; }
+.post-body strong { font-weight: 600; }
+
 /* ===========================================================================
    Scroll-reveal (reveal.ts adds .in-view). Gated by .js so content is fully
    visible when JavaScript is disabled.

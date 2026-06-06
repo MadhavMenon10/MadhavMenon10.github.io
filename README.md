@@ -1,145 +1,100 @@
 # madhavmenon10.github.io
 
-Personal portfolio — a static-first [Astro](https://astro.build) site. A WebGL2
-"spacetime" grid + star field renders as a **full-page background** (bright and
-additive in dark mode, **black** in light mode), the main content sits in a
-translucent **terminal window**, and the projects section features a stylized
-GPU **streaming-multiprocessor (SM) block diagram**. Aesthetic: a fusion of
-systems/GPU programming and astrophysics, dark-mode first.
+My personal site. It's an Astro project with a WebGL background and a few
+interactive pieces, but it's static underneath, so it loads fast and still works
+with JavaScript turned off.
 
-Built to stay fast and accessible:
+The idea is a terminal sitting out in deep space. A point cloud and a warping
+grid draw on a canvas behind everything, and the actual content sits in a tinted
+terminal window on top of it. Dark mode is the default. Light mode flips the grid
+to black so it still reads against a white page.
 
-- **No heavy dependencies** — raw WebGL2 (no three.js), CSS transforms +
-  `IntersectionObserver` for scroll effects, Tailwind v4 for styling.
-- **60fps-minded** — one shader program, two draw calls; DPR-capped; the render
-  loop pauses when offscreen, when the tab is hidden, and in light mode.
-- **Works without JS** — the hero falls back to a CSS deep-space gradient and
-  all content renders server-side.
-- **Respects `prefers-reduced-motion`** — animations are disabled and the
-  static gradient is shown.
+## Running it locally
 
-## Quick start
+You need Node 18.20+, 20.3+, or 22.
 
-Requires Node 18.20.8+, 20.3+, or 22+.
-
-```bash
+```
 npm install
-npm run dev        # local dev server at http://localhost:4321
+npm run dev
 ```
 
-### Scripts
+That serves the site at http://localhost:4321. The other commands:
 
-| Command           | Action                                            |
-| ----------------- | ------------------------------------------------- |
-| `npm run dev`     | Start the dev server                              |
-| `npm run build`   | Type-sync content + build static site to `dist/`  |
-| `npm run preview` | Preview the production build locally              |
-| `npm run check`   | Run `astro check` (type-check `.astro`/`.ts`)     |
+```
+npm run build     # write a static site to dist/
+npm run preview   # serve what you just built
+npm run check     # astro check, for types
+```
 
 ## Editing content
 
-All content lives in data/content files — you shouldn't need to touch
-components.
+Most of what you'd want to change is in one file, `src/data/site.ts`. Name,
+tagline, bio, the row of links, the project cards. Anything labelled TODO is a
+placeholder I left for you to fill in.
 
-- **Bio, role, tagline, links, projects** → [`src/data/site.ts`](src/data/site.ts).
-  Items marked `TODO` are placeholders.
-- **Writing posts** → add a Markdown file to `src/content/writing/`. Frontmatter:
-
-  ```md
-  ---
-  title: "Post title"
-  date: 2026-02-01
-  blurb: "One-line summary shown in the list."
-  link: "https://optional-external-url"   # optional
-  draft: false                              # drafts are hidden in prod builds
-  ---
-
-  Body (Markdown).
-  ```
-
-- **Static files** (resume PDF, headshot, logos) live in `public/` and are
-  served at the site root (e.g. `/resume.pdf`).
-
-## Theming
-
-Dark is the primary theme; light is a clean inverted variant. The toggle
-persists to `localStorage` and respects the OS preference on first load. An
-inline script in `Base.astro` sets the theme before first paint (no flash).
-
-Colors are CSS variables in [`src/styles/global.css`](src/styles/global.css)
-(`:root` = dark, `[data-theme="light"]` = light) and surfaced as Tailwind
-utilities (`bg-bg`, `text-fg`, `text-accent`, …).
-
-## Tuning the hero effect
-
-- **Shader math + uniforms** — [`src/scripts/gl-shaders.ts`](src/scripts/gl-shaders.ts).
-  The `warp()` function controls the grid deformation: ambient ripple
-  (`u_amp`, `u_freq`, `u_drift`) plus a mouse "gravity well"
-  (`u_wellStrength`, `u_wellRadius`).
-- **Uniform values, camera, per-theme colors, quality tiers** —
-  [`src/scripts/hero.ts`](src/scripts/hero.ts). `frame()` sets the blend mode
-  and palette per theme (additive bright in dark; normal-blend black in light);
-  `pickTier()` scales grid resolution and star count by device; `DPR_CAP` limits
-  overdraw.
-- **Terminal tint + SM-diagram palette** — CSS variables in
-  [`src/styles/global.css`](src/styles/global.css) (`--term-*`, `--sm-*`),
-  themed for dark and light.
-
-Degradation: no WebGL2, low-power devices, and `prefers-reduced-motion` fall
-back to the static CSS gradient. The terminal uses `backdrop-filter` — if you
-hit jank on low-end GPUs, raise the `--term-bg` opacity and drop the blur.
-
-## Interactive SM diagram
-
-The streaming-multiprocessor diagram in the projects section is an interactive
-map of the site (`GpuDiagram.astro` + [`src/scripts/gpu-map.ts`](src/scripts/gpu-map.ts)):
-
-- **Core types filter the projects.** Hover/click **INT32 / FP32 / FP64 /
-  Tensor Core** to filter the grid by domain. Tag each project in `site.ts`
-  with `units` (`'int' | 'fp32' | 'fp64' | 'tensor'`).
-- **Other units navigate.** L1 I-Cache → About, LD/ST → Links, SFU → Writing,
-  Tensor Memory Accelerator → email.
-- The whole unit → destination mapping is the `gpu` config in
-  [`src/data/site.ts`](src/data/site.ts) — edit labels, commands, and targets there.
-
-Built progressively: every unit is a real link, so it still navigates with
-JavaScript disabled (filtering just falls back to "show all"); one instance per
-type is keyboard-focusable and ARIA-labeled, and highlighting is color-only
-under `prefers-reduced-motion`.
-
-## Project structure
+Writing posts are Markdown files in `src/content/writing/`. Add a file with
+frontmatter like this and the list picks it up automatically, newest first:
 
 ```
-src/
-├─ data/site.ts            # single source of truth for page content
-├─ content/                # "writing" collection (Markdown posts) + schema
-├─ layouts/Base.astro      # HTML shell, head, theme bootstrap, nav/footer
-├─ components/             # Hero, Terminal, About, Links, Projects, Writing, GpuDiagram, …
-├─ scripts/                # hero (WebGL2 grid bg), gl-shaders, gl-math, reveal, gpu-map
-├─ styles/global.css       # Tailwind entry + design tokens + keyframes
-└─ pages/index.astro       # single-page assembly
-public/                    # static assets (favicon, resume, images, .nojekyll)
+---
+title: "Some post"
+date: 2026-02-01
+blurb: "The one line that shows up in the list."
+link: "https://example.com/the-post"   # optional, sends the title somewhere
+draft: false
+---
 ```
 
-## Deploy
+Drafts stay hidden in production builds. Resume, headshot, and anything else
+static go in `public/` and are served from the root, so `public/resume.pdf` is
+just `/resume.pdf`.
 
-The site builds to a static `dist/` — host it anywhere.
+## The GPU diagram
 
-### GitHub Pages (included workflow)
+The streaming multiprocessor diagram under Projects is not only a picture. Each
+unit actually does something. Hover one and the matching command shows up in the
+little prompt underneath. Click a core column (INT32, FP32, FP64, Tensor Core)
+and the project grid filters down to that kind of work. The other blocks move you
+around the page: the L1 cache goes to About, the load/store units go to Links,
+the SFU goes to Writing, and the memory accelerator opens an email.
 
-This is a user page (`madhavmenon10.github.io`), served at the domain root.
+If you want to rewire any of that, the `gpu` block at the bottom of
+`src/data/site.ts` is where the unit to destination mapping lives. To file a
+project under a core type, give it a `units` array, for example `units: ['fp64']`.
 
-1. Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-2. Push to `main`. The workflow at
-   [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds with
-   `withastro/action` and deploys with `actions/deploy-pages`.
+None of it depends on JavaScript. The units are real links, so with JS off they
+still navigate and you only lose the filtering. It's keyboard friendly too.
 
-(`public/.nojekyll` is included so the `_astro/` build output is served.)
+## The background
 
-### Vercel
+The canvas is plain WebGL2. No three.js, one vertex shader and one fragment
+shader. Both are commented in `src/scripts/gl-shaders.ts` if you want to poke at
+them. The `warp()` function is where the grid bends. The uniforms above it set
+the ripple and the small gravity well that follows your cursor.
 
-Import the repo (framework preset **Astro** is auto-detected: build
-`astro build`, output `dist`), or run `npx vercel`.
+A few things worth knowing, all in `src/scripts/hero.ts`:
 
-> If deploying as a *project* page under a sub-path, set `base: '/<repo>'` in
-> `astro.config.mjs`. Not needed here (root domain).
+- particle counts drop on weaker hardware, see `pickTier()`
+- `DPR_CAP` stops it from cooking high density screens
+- it pauses when the tab is in the background, and it turns off entirely for
+  anyone with reduced motion set, falling back to a plain gradient
+
+Colours and the terminal tint are CSS variables in `src/styles/global.css`
+(`--term-*` and `--sm-*`), one set for dark and one for light.
+
+## Deploying
+
+It builds to a static `dist/`, so anything that serves files will host it.
+
+For GitHub Pages there's a workflow in `.github/workflows/deploy.yml`. Switch it
+on once under Settings, then Pages, then set the source to GitHub Actions. After
+that, every push to `main` builds and publishes. The `.nojekyll` file in
+`public/` keeps Pages from ignoring the `_astro` folder.
+
+For Vercel, import the repo and it recognises Astro on its own, or run
+`npx vercel` from the project.
+
+## Stack
+
+Astro, Tailwind v4, and a little vanilla TypeScript for the canvas and the
+diagram. No UI framework and no animation library.

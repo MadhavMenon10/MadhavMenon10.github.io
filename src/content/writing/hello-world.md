@@ -1,8 +1,29 @@
 ---
-title: "Hello World"
-date: June 06 2026
-blurb: "Hello World. My webite is now live"
+title: "Hello, world"
+date: 2026-01-01
+blurb: "A placeholder post so the writing pages have something to render. Replace it with your own."
 draft: false
 ---
 
-Hello World. My website is now live. This is a fun curation of everything I've done, and is a slightly more casual form of expression than Linkedin. Here, you can find the various projects I've done, small pieces I have written, and get to know more about me professionally and personally. I hope you can see that the theme of the website reflects my interests in systems programming and physics!
+This is a placeholder post. Delete it or replace the text with your own. Any
+Markdown file you drop in `src/content/writing/` turns into a page like this one,
+and the list on the home page links to it automatically.
+
+## Formatting
+
+You can use **bold**, *italics*, `inline code`, and [links](https://astro.build).
+Lists work too:
+
+- one
+- two
+- three
+
+```js
+// fenced code blocks get syntax highlighting
+const answer = 42;
+```
+
+> And block quotes look like this.
+
+If you'd rather link a post hosted somewhere else, add a `link:` field to the
+frontmatter and the list will point there instead of generating a page.

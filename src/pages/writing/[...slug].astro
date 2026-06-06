@@ -1,0 +1,33 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Terminal from '../../components/Terminal.astro';
+import { site } from '../../data/site';
+
+// One page per Markdown file in src/content/writing/. Drafts are skipped in
+// production builds but viewable in `npm run dev`.
+export async function getStaticPaths() {
+  const posts = await getCollection('writing', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  );
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, date, blurb } = post.data;
+const stamp = date.toISOString().slice(0, 10).replace(/-/g, '.');
+---
+
+<Base title={`${title} · ${site.name}`} description={blurb}>
+  <div class="relative z-10 mx-auto w-full max-w-3xl px-4 pb-24 pt-28 sm:px-6">
+    <Terminal title={`madhav@portfolio: ~/writing/${post.id}`}>
+      <article class="post-body">
+        <p class="post-back"><a href="/#writing">&#8592; back to writing</a></p>
+        <p class="post-date"><time datetime={date.toISOString()}>{stamp}</time></p>
+        <h1 class="post-title">{title}</h1>
+        <Content />
+      </article>
+    </Terminal>
+  </div>
+</Base>
