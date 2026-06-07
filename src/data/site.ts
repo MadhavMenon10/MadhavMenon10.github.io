@@ -37,7 +37,7 @@ export interface Site {
 
 export const site: Site = {
   // Identity is prefilled from the repo owner; everything else is TODO.
-  name: 'Madhav Menon',
+  name: 'Madhav Anand Menon',
   role: 'TODO: role line — e.g. "CS + Physics @ University"',
   tagline: '// TODO: one-line tagline',
   bio: 'TODO: short bio — a few sentences on who you are and what you work on.',
@@ -45,10 +45,10 @@ export const site: Site = {
 
   // Single-page anchor navigation.
   nav: [
-    { label: 'about', href: '#about' },
-    { label: 'links', href: '#links' },
-    { label: 'projects', href: '#projects' },
-    { label: 'writing', href: '#writing' },
+    { label: 'About', href: '#about' },
+    { label: 'Links', href: '#links' },
+    { label: 'Projects', href: '#projects' },
+    { label: 'Writing', href: '#writing' },
   ],
 
   // Prominent links row. Replace '#TODO' with real URLs.
@@ -58,7 +58,6 @@ export const site: Site = {
     { label: 'Email', href: 'mailto:madhav4@illinois.edu' },
     { label: 'LinkedIn', href: '#TODO', external: true },
     { label: 'GitHub', href: '#TODO', external: true },
-    { label: 'Transcript', href: '#TODO' },
   ],
 };
 

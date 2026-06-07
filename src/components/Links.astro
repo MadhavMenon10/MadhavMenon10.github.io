@@ -4,7 +4,7 @@ import { site } from '../data/site';
 
 <section id="links" class="reveal border-t border-border/60 py-9" data-reveal>
   <h2 class="mb-6 font-mono text-sm text-accent">
-    <span class="text-fg-dim">~/</span>links
+    <span class="text-fg-dim">~/</span>Links
   </h2>
 
   <ul class="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
@@ -18,7 +18,7 @@ import { site } from '../data/site';
             rel={link.external ? 'noopener noreferrer' : undefined}
           >
             <span class="text-accent-dim transition-colors group-hover:text-accent">/ </span>
-            {link.label.toLowerCase()}
+            {link.label}
           </a>
         </li>
       ))
