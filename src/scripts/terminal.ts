@@ -75,6 +75,14 @@ export function initTerminal(): void {
   portal.appendChild(reopenBtn);
   if (wrapper) wrapper.hidden = true;
 
+  // Lock page scroll permanently on the home page.
+  // The home page is a fullscreen app — all navigation happens inside the
+  // terminal overlay.  Locking scroll here is the most reliable way to keep
+  // the icon from drifting regardless of what position:fixed quirks the
+  // browser might have with backdrop-filter siblings or Tailwind resets.
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+
   // ---- Initial state: terminal hidden, icon visible ----
   hideTerm(termEl);
   showIcon(reopenBtn);
@@ -175,7 +183,6 @@ export function initTerminal(): void {
     hideTerm(termEl);
     showIcon(reopenBtn);
     if (scrollPrompt) scrollPrompt.hidden = true;
-    document.body.style.overflow = '';
   }
 
   // ---- keyboard capture ----

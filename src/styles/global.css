@@ -198,6 +198,36 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 }
 .terminal-body { padding: clamp(1.25rem, 3.5vw, 2.5rem); }
 
+/* ===========================================================================
+   Hero headshot — circular photo right of the name block on desktop.
+=========================================================================== */
+.hero-headshot-wrap {
+  flex-shrink: 0;
+}
+.hero-headshot {
+  display: block;
+  width: clamp(7rem, 14vw, 11rem);
+  height: clamp(7rem, 14vw, 11rem);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 2px solid var(--accent);
+  box-shadow:
+    0 0 0 4px rgba(74, 222, 128, 0.12),
+    0 8px 32px rgba(0, 0, 0, 0.55);
+  filter: grayscale(18%);
+  transition: filter 0.3s ease, box-shadow 0.3s ease;
+}
+.hero-headshot:hover {
+  filter: grayscale(0%);
+  box-shadow:
+    0 0 0 4px rgba(74, 222, 128, 0.28),
+    0 12px 40px rgba(0, 0, 0, 0.65);
+}
+@media (max-width: 400px) {
+  .hero-headshot-wrap { display: none; }
+}
+
 /* ---------------------------------------------------------------------------
    Home page: hide terminal before first paint (html.js is injected inline
    in Base.astro before any paint, so this takes effect immediately).
