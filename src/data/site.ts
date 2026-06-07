@@ -40,7 +40,7 @@ export const site: Site = {
   name: 'Madhav Anand Menon',
   role: 'Computer Science & Physics + Minor in Mathematics @ UIUC',
   tagline: '// TODO: one-line tagline',
-  bio: 'TODO: short bio — a few sentences on who you are and what you work on.',
+  bio: 'Hi, I\'m Madhav! I am currently an incoming junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore. Now, I live in the US. I speak five languages (to varying levels of fluency). I am currently interning at Valeo.'
   email: 'madhavanandmenon@gmail.com',
 
   // Single-page anchor navigation.

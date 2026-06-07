@@ -4,4 +4,4 @@ date: June 07 2026
 blurb: "Hello World! My website is now live."
 draft: false
 ---
-Hello World! My website is now live. This website serves as a curation of my experiences, the various projects I’ve done, and a few pieces of my writing. It serves as a slightly more casual and creative alternative to Linkedin. I hope you can see that the theme of the website reflects my interests in GPU programming and physics!
+Hello World! My website is now live. It serves as a curation of my experiences, the projects I've done, and, if I ever get around to it, a few pieces of my writing. I want this to be a more casual and creative alternative to LinkedIn. I hope you can appreciate that the theme reflects my interests in systems/GPU programming and physics!
