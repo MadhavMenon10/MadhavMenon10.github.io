@@ -1,6 +1,12 @@
 ---
 import { site } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
+
+// On non-home pages (writing/project posts), nav anchors need an absolute
+// path so they navigate back to the home page's sections rather than looking
+// for a non-existent element on the current page.
+const isHome = Astro.url.pathname === '/';
+const navHref = (href: string) => isHome ? href : '/' + href;
 ---
 
 <header
@@ -23,7 +29,7 @@ import ThemeToggle from './ThemeToggle.astro';
           site.nav.map((item) => (
             <li>
               <a
-                href={item.href}
+                href={navHref(item.href)}
                 class="rounded px-2 py-1 text-fg-dim transition-colors hover:text-accent"
               >
                 {item.label}

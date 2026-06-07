@@ -1,58 +1,102 @@
 /* ===========================================================================
    terminal.ts — interactive terminal intro experience.
 
-   Flow:
-     - On load: if the user revealed the terminal this session, skip the intro.
-     - Otherwise: show empty bash prompt, hide all content.
-     - User types "learn more" (case-insensitive) → content reveals immediately.
-     - Red dot  → collapses the terminal wrapper; a terminal app icon appears.
-     - Yellow dot → animates typing "clear", resets to the empty prompt (and
-       clears the session flag so "learn more" is required again).
+   Home page flow:
+     - Starts closed: terminal hidden, app icon centered on screen.
+     - Click icon → opens terminal.
+       · First visit: shows "type learn more" prompt.
+       · Return visit (same session): skips prompt, shows content directly.
+     - Type "learn more" (case-insensitive) → content reveals immediately.
+     - Red dot  → closes terminal, shows centered app icon again.
+     - Yellow dot → animates "clear", resets to empty prompt (clears session).
      - Green dot → no-op.
-     - Nav / in-page anchor links → auto-reopen + auto-reveal + scroll.
-   No-JS fallback: handled in CSS (html.js selector) — content always visible.
+     - Nav / anchor links inside #term-content → auto-open + reveal + scroll.
+     - Arriving at /#hash (e.g. from a post page) → same auto-open behavior.
+
+   Non-home pages (writing/project posts):
+     - Immediately reveals content; no interactive gate.
+
+   No-JS fallback: CSS (html.js selector) keeps content visible by default.
 =========================================================================== */
 
 const SESSION_KEY = 'terminal-revealed';
 
 export function initTerminal(): void {
+  const intro   = document.getElementById('term-intro');
+  const content = document.getElementById('term-content');
+
+  if (!intro || !content) return;
+
+  // ---- Non-home pages: show content immediately, no gate ----
+  if (window.location.pathname !== '/') {
+    intro.classList.add('term-intro-gone');
+    content.classList.add('term-shown');
+    return;
+  }
+
+  // ---- Home page setup ----
   const wrapper   = document.getElementById('terminal-wrapper');
-  const intro     = document.getElementById('term-intro');
-  const content   = document.getElementById('term-content');
   const typedEl   = document.getElementById('term-typed');
   const closeDot  = document.getElementById('term-close');
   const clearDot  = document.getElementById('term-clear');
   const reopenBtn = document.getElementById('term-reopen') as HTMLButtonElement | null;
 
-  if (!intro || !content || !typedEl || !closeDot || !clearDot || !reopenBtn) return;
+  if (!typedEl || !closeDot || !clearDot || !reopenBtn) return;
 
-  // Move the reopen button to <body> so it is never inside the hidden wrapper.
-  // position:fixed keeps it visually in place regardless of DOM parent.
+  // Move reopenBtn to <body> so wrapper.hidden never hides it.
   document.body.appendChild(reopenBtn);
 
   let typed    = '';
   let revealed = false;
-  let closed   = false;
+  let closed   = true; // starts closed
   let clearing = false;
 
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---- reveal: instantly show all content ----
+  // Apply initial closed state immediately.
+  if (wrapper) wrapper.hidden = true;
+  reopenBtn.hidden = false;
+
+  // ---- reveal: show all site content ----
   function reveal(): void {
     if (revealed) return;
     revealed = true;
-    try { sessionStorage.setItem(SESSION_KEY, 'true'); } catch (_) { /* private browsing */ }
+    try { sessionStorage.setItem(SESSION_KEY, 'true'); } catch (_) { /* private mode */ }
     document.removeEventListener('keydown', handleKey);
     intro.classList.add('term-intro-gone');
     content.classList.add('term-shown');
   }
 
-  // ---- skip intro if user already revealed the terminal this session ----
-  let startRevealed = false;
-  try { startRevealed = sessionStorage.getItem(SESSION_KEY) === 'true'; } catch (_) { /* */ }
-  if (startRevealed) reveal();
+  // ---- open terminal (from icon click or hash navigation) ----
+  function openTerm(): void {
+    if (!closed) return;
+    closed = false;
+    if (wrapper) wrapper.hidden = false;
+    reopenBtn.hidden = true;
 
-  // ---- keyboard capture (active only in intro/unrevealed state) ----
+    let wasRevealed = false;
+    try { wasRevealed = sessionStorage.getItem(SESSION_KEY) === 'true'; } catch (_) { /* */ }
+
+    if (wasRevealed) {
+      reveal(); // skip "learn more", go straight to content
+    } else {
+      document.addEventListener('keydown', handleKey);
+    }
+  }
+
+  // ---- red dot: close terminal ----
+  function closeTerm(): void {
+    if (closed) return;
+    closed = true;
+    document.removeEventListener('keydown', handleKey);
+    // Reset typed buffer so reopening gives a clean prompt
+    typed = '';
+    typedEl.textContent = '';
+    if (wrapper) wrapper.hidden = true;
+    reopenBtn.hidden = false;
+  }
+
+  // ---- keyboard capture (active only while open and unrevealed) ----
   function handleKey(e: KeyboardEvent): void {
     if (revealed || closed || clearing) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -67,7 +111,7 @@ export function initTerminal(): void {
       if (typed.trim().toLowerCase() === 'learn more') reveal();
       return;
     }
-    if (e.key.length !== 1) return; // ignore Tab, Arrow, Escape, F-keys, etc.
+    if (e.key.length !== 1) return;
 
     typed += e.key;
     typedEl.textContent = typed;
@@ -75,22 +119,7 @@ export function initTerminal(): void {
     if (typed.toLowerCase() === 'learn more') reveal();
   }
 
-  // ---- red dot: close terminal, show app icon ----
-  function closeTerm(): void {
-    if (closed) return;
-    closed = true;
-    if (wrapper) wrapper.hidden = true;
-    reopenBtn.hidden = false;
-  }
-
-  // ---- app icon click: restore terminal ----
-  function reopenTerm(): void {
-    closed = false;
-    if (wrapper) wrapper.hidden = false;
-    reopenBtn.hidden = true;
-  }
-
-  // ---- yellow dot: animate "clear" then reset to empty prompt ----
+  // ---- yellow dot: animate "clear", reset to intro ----
   const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
   async function clearTerm(): Promise<void> {
@@ -98,7 +127,6 @@ export function initTerminal(): void {
     clearing = true;
     document.removeEventListener('keydown', handleKey);
 
-    // Animate typing "clear" into the prompt
     typed = '';
     typedEl.textContent = '';
     for (let i = 1; i <= 5; i++) {
@@ -107,7 +135,6 @@ export function initTerminal(): void {
     }
     await sleep(220);
 
-    // Reset to initial state and clear the session flag
     typed    = '';
     revealed = false;
     clearing = false;
@@ -119,9 +146,7 @@ export function initTerminal(): void {
     document.addEventListener('keydown', handleKey);
   }
 
-  // ---- in-page anchor links: auto-open + auto-reveal + scroll ----
-  // Intercepts any <a href="#..."> whose target section lives inside
-  // #term-content. Opens and reveals the terminal if needed, then scrolls.
+  // ---- in-page anchor clicks: auto-open + reveal + scroll ----
   document.addEventListener('click', (e) => {
     const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
     if (!a) return;
@@ -132,21 +157,32 @@ export function initTerminal(): void {
     const target = document.querySelector<HTMLElement>(hash);
     if (!target || !content.contains(target)) return;
 
-    // Already open and revealed — nothing to do, let the browser scroll.
-    if (!closed && revealed) return;
+    if (!closed && revealed) return; // already open, let browser scroll
 
     e.preventDefault();
-
-    if (closed) reopenTerm();
+    if (closed) openTerm();
     if (!revealed) reveal();
 
-    // Wait two frames for display changes and layout recalculation.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         target.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
       });
     });
   });
+
+  // ---- handle arriving via /#hash (e.g. "back to writing" link) ----
+  const initHash = window.location.hash;
+  if (initHash && initHash !== '#') {
+    const hashTarget = document.querySelector<HTMLElement>(initHash);
+    if (hashTarget && content.contains(hashTarget)) {
+      openTerm();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          hashTarget.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
+        });
+      });
+    }
+  }
 
   // ---- wire up dots ----
   closeDot.addEventListener('click', closeTerm);
@@ -159,8 +195,5 @@ export function initTerminal(): void {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); void clearTerm(); }
   });
 
-  reopenBtn.addEventListener('click', reopenTerm);
-
-  // ---- start capturing keys (skip if already revealed) ----
-  if (!startRevealed) document.addEventListener('keydown', handleKey);
+  reopenBtn.addEventListener('click', openTerm);
 }

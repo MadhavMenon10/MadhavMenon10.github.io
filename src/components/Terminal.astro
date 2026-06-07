@@ -60,7 +60,7 @@ const { title = 'madhav@portfolio: ~' } = Astro.props;
   </div>
 </div>
 
-<!-- Terminal app icon — shown only after the terminal is closed via red dot -->
+<!-- Terminal app icon — centered on screen when terminal is closed -->
 <button
   id="term-reopen"
   class="term-reopen-btn"
@@ -68,9 +68,8 @@ const { title = 'madhav@portfolio: ~' } = Astro.props;
   title="Open terminal"
   hidden
 >
-  <span class="term-icon-inner" aria-hidden="true">
-    <span class="term-icon-line term-icon-prompt">&gt;_</span>
-  </span>
+  <span class="term-icon-graphic" aria-hidden="true">&gt;_</span>
+  <span class="term-icon-label">// click to open</span>
 </button>
 
 <script>
