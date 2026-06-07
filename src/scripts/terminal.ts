@@ -60,6 +60,7 @@ function hideTerm(termEl: HTMLElement): void {
 
 /** Show the reopen icon — fixed center-screen via inline styles. */
 function showIcon(btn: HTMLButtonElement): void {
+  btn.hidden = false; // remove the HTML hidden attribute so no UA/author rule can block it
   btn.style.cssText = `
     display: flex;
     flex-direction: column;
