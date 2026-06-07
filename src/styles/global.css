@@ -199,36 +199,12 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 .terminal-body { padding: clamp(1.25rem, 3.5vw, 2.5rem); }
 
 /* ---------------------------------------------------------------------------
-   Home page fixed-overlay terminal (terminal.ts adds .is-home to <body>
-   and .term-window-open to #main-terminal when the user opens it).
-   Post-page terminals are unaffected — they never get these classes.
+   Home page: hide terminal before first paint (html.js is injected inline
+   in Base.astro before any paint, so this takes effect immediately).
+   terminal.ts opens the terminal via inline styles, which always override
+   non-!important CSS rules — so no class toggling needed.
 --------------------------------------------------------------------------- */
-
-/* Home page: terminal starts hidden; becomes a fixed overlay when opened. */
-.is-home #main-terminal { display: none; }
-
-.is-home #main-terminal.term-window-open {
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: calc(var(--nav-h) + 0.75rem);
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 2rem);
-  max-width: 48rem;
-  /* Fill the viewport between the nav and a small bottom gap */
-  height: calc(100svh - var(--nav-h) - 1.5rem);
-  z-index: 20;
-  overflow: hidden;
-}
-
-/* Terminal body scrolls independently; the window frame stays fixed. */
-.is-home #main-terminal.term-window-open .terminal-body {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0; /* required for overflow in a flex child */
-  /* Keep the padding from the base rule */
-}
+html.js #main-terminal { display: none; }
 
 /* ---------------------------------------------------------------------------
    Terminal interactive intro (terminal.ts)

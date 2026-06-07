@@ -2,25 +2,61 @@
    terminal.ts — interactive terminal intro experience.
 
    Home page:
-     - Starts closed: terminal hidden, centered app icon + "// click to open".
-     - Click icon → terminal opens as a FIXED overlay (stays in place while
-       content scrolls inside it — like a real app window).
+     - Starts closed: terminal hidden, centered app icon shown.
+     - Click icon → terminal opens as a fixed overlay that NEVER moves when the
+       user scrolls (position: fixed, applied via inline styles to guarantee
+       specificity over any Tailwind/CSS overrides).  The terminal-body scrolls
+       its own content independently, like a real app window.
      - First open: shows "type learn more" prompt.
      - Return visit (same session): skips prompt, shows content directly.
      - Type "learn more" → content reveals instantly.
-     - Red dot  → closes terminal, icon reappears.
-     - Yellow dot → animates "clear", resets to empty prompt (clears session).
+     - Red dot  → closes terminal; app icon reappears.
+     - Yellow dot → animates "clear", resets prompt (clears session flag).
      - Green dot → no-op.
-     - Nav / anchor links → auto-open + reveal + scroll.
+     - Nav / anchor links → auto-open + reveal + scroll within terminal.
      - Arriving at /#hash (from post pages) → same auto-open behavior.
 
    Non-home pages (writing/project posts):
      - Immediately reveals content; no gate, no fixed overlay.
 
-   No-JS fallback: CSS keeps content visible; no terminal gate.
+   No-JS fallback: CSS keeps content always visible.
 =========================================================================== */
 
 const SESSION_KEY = 'terminal-revealed';
+
+/** Inline styles to apply when the terminal is open as a fixed overlay. */
+function fixedOpenStyles(termEl: HTMLElement): void {
+  termEl.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: calc(var(--nav-h) + 0.75rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 48rem;
+    height: calc(100svh - var(--nav-h) - 1.5rem);
+    z-index: 20;
+    overflow: hidden;
+  `;
+  const body = termEl.querySelector<HTMLElement>('.terminal-body');
+  if (body) {
+    body.style.flex = '1';
+    body.style.overflowY = 'auto';
+    body.style.minHeight = '0';
+  }
+}
+
+/** Reset terminal back to hidden. */
+function fixedCloseStyles(termEl: HTMLElement): void {
+  termEl.style.cssText = 'display: none;';
+  const body = termEl.querySelector<HTMLElement>('.terminal-body');
+  if (body) {
+    body.style.flex = '';
+    body.style.overflowY = '';
+    body.style.minHeight = '';
+  }
+}
 
 export function initTerminal(): void {
   const intro   = document.getElementById('term-intro');
@@ -28,8 +64,12 @@ export function initTerminal(): void {
 
   if (!intro || !content) return;
 
-  // ---- Non-home pages: always show content directly ----
+  // ---- Non-home pages: show terminal and content directly (no gate) ----
   if (window.location.pathname !== '/') {
+    // CSS hides #main-terminal via html.js rule; override it so it renders
+    // normally in document flow on post/project pages.
+    const termElPost = document.getElementById('main-terminal');
+    if (termElPost) termElPost.style.display = 'block';
     intro.classList.add('term-intro-gone');
     content.classList.add('term-shown');
     return;
@@ -46,16 +86,16 @@ export function initTerminal(): void {
 
   if (!termEl || !typedEl || !closeDot || !clearDot || !reopenBtn) return;
 
-  // Mark home page so CSS can scope the fixed-overlay rules.
-  document.body.classList.add('is-home');
-
-  // Lift both elements to <body> so they are never trapped inside a
-  // hidden ancestor. position:fixed anchors them to the viewport regardless.
+  // Lift both elements to <body> so no ancestor's display/overflow traps them.
   document.body.appendChild(termEl);
   document.body.appendChild(reopenBtn);
 
-  // The wrapper is now empty — collapse it permanently.
+  // Collapse the now-empty wrapper permanently.
   if (wrapper) wrapper.hidden = true;
+
+  // Apply initial hidden state via inline style (beats any CSS specificity).
+  fixedCloseStyles(termEl);
+  reopenBtn.hidden = false;
 
   let typed    = '';
   let revealed = false;
@@ -63,9 +103,6 @@ export function initTerminal(): void {
   let clearing = false;
 
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Apply initial closed state.
-  reopenBtn.hidden = false;
 
   // ---- reveal: show all content ----
   function reveal(): void {
@@ -77,17 +114,18 @@ export function initTerminal(): void {
     content.classList.add('term-shown');
   }
 
-  // ---- open: show terminal as a fixed overlay ----
+  // ---- open: show terminal as fixed overlay ----
   function openTerm(): void {
     if (!closed) return;
     closed = false;
-    termEl.classList.add('term-window-open');
+    fixedOpenStyles(termEl);
     reopenBtn.hidden = true;
     if (scrollPrompt) scrollPrompt.hidden = false;
+    // Prevent the page from scrolling behind the fixed terminal.
+    document.body.style.overflow = 'hidden';
 
     let wasRevealed = false;
     try { wasRevealed = sessionStorage.getItem(SESSION_KEY) === 'true'; } catch (_) { /* */ }
-
     if (wasRevealed) {
       reveal();
     } else {
@@ -95,16 +133,18 @@ export function initTerminal(): void {
     }
   }
 
-  // ---- red dot: close terminal, show icon ----
+  // ---- red dot: close terminal ----
   function closeTerm(): void {
     if (closed) return;
     closed = true;
     document.removeEventListener('keydown', handleKey);
     typed = '';
     typedEl.textContent = '';
-    termEl.classList.remove('term-window-open');
+    fixedCloseStyles(termEl);
     reopenBtn.hidden = false;
     if (scrollPrompt) scrollPrompt.hidden = true;
+    // Restore page scroll.
+    document.body.style.overflow = '';
   }
 
   // ---- keyboard capture (home page, open, unrevealed) ----
@@ -157,7 +197,7 @@ export function initTerminal(): void {
     document.addEventListener('keydown', handleKey);
   }
 
-  // ---- in-page anchor clicks: auto-open + reveal + scroll within terminal ----
+  // ---- anchor clicks: auto-open + reveal + scroll within terminal ----
   document.addEventListener('click', (e) => {
     const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
     if (!a) return;
@@ -178,7 +218,7 @@ export function initTerminal(): void {
     });
   });
 
-  // ---- handle arriving via /#hash (e.g. nav link from a post page) ----
+  // ---- handle arriving via /#hash (from post page nav links) ----
   const initHash = window.location.hash;
   if (initHash && initHash !== '#') {
     const hashTarget = document.querySelector<HTMLElement>(initHash);
