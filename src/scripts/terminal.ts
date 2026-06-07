@@ -24,8 +24,8 @@
 
 const SESSION_KEY = 'terminal-revealed';
 
-/** Inline styles to apply when the terminal is open as a fixed overlay. */
-function fixedOpenStyles(termEl: HTMLElement): void {
+/** Inline styles for the terminal when open as a fixed overlay. */
+function showTerm(termEl: HTMLElement): void {
   termEl.style.cssText = `
     display: flex;
     flex-direction: column;
@@ -47,8 +47,8 @@ function fixedOpenStyles(termEl: HTMLElement): void {
   }
 }
 
-/** Reset terminal back to hidden. */
-function fixedCloseStyles(termEl: HTMLElement): void {
+/** Inline styles to hide the terminal. */
+function hideTerm(termEl: HTMLElement): void {
   termEl.style.cssText = 'display: none;';
   const body = termEl.querySelector<HTMLElement>('.terminal-body');
   if (body) {
@@ -56,6 +56,30 @@ function fixedCloseStyles(termEl: HTMLElement): void {
     body.style.overflowY = '';
     body.style.minHeight = '';
   }
+}
+
+/** Show the reopen icon — fixed center-screen via inline styles. */
+function showIcon(btn: HTMLButtonElement): void {
+  btn.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 50;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  `;
+}
+
+/** Hide the reopen icon. */
+function hideIcon(btn: HTMLButtonElement): void {
+  btn.style.cssText = 'display: none;';
 }
 
 export function initTerminal(): void {
@@ -93,9 +117,9 @@ export function initTerminal(): void {
   // Collapse the now-empty wrapper permanently.
   if (wrapper) wrapper.hidden = true;
 
-  // Apply initial hidden state via inline style (beats any CSS specificity).
-  fixedCloseStyles(termEl);
-  reopenBtn.hidden = false;
+  // Apply initial state via inline styles (highest priority — beats all CSS).
+  hideTerm(termEl);
+  showIcon(reopenBtn);
 
   let typed    = '';
   let revealed = false;
@@ -118,8 +142,8 @@ export function initTerminal(): void {
   function openTerm(): void {
     if (!closed) return;
     closed = false;
-    fixedOpenStyles(termEl);
-    reopenBtn.hidden = true;
+    showTerm(termEl);
+    hideIcon(reopenBtn);
     if (scrollPrompt) scrollPrompt.hidden = false;
     // Prevent the page from scrolling behind the fixed terminal.
     document.body.style.overflow = 'hidden';
@@ -140,8 +164,8 @@ export function initTerminal(): void {
     document.removeEventListener('keydown', handleKey);
     typed = '';
     typedEl.textContent = '';
-    fixedCloseStyles(termEl);
-    reopenBtn.hidden = false;
+    hideTerm(termEl);
+    showIcon(reopenBtn);
     if (scrollPrompt) scrollPrompt.hidden = true;
     // Restore page scroll.
     document.body.style.overflow = '';
