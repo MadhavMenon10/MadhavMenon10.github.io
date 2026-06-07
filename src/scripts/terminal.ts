@@ -95,10 +95,10 @@ export function initTerminal(): void {
     footer.style.zIndex   = '15';
     footer.style.paddingTop    = '0.5rem';
     footer.style.paddingBottom = '0.5rem';
-    // Remove the decorative top-border + padding from the inner bar
-    // (they look right in flow, not as a slim fixed bar).
+    // Keep the original border-t (the horizontal rule above the text) but
+    // replace the large pt-8 gap with something tighter for the fixed bar.
     const inner = footer.querySelector<HTMLElement>('div');
-    if (inner) { inner.style.borderTop = 'none'; inner.style.paddingTop = '0'; }
+    if (inner) { inner.style.paddingTop = '0.5rem'; }
   }
 
   // ---- Initial state: terminal hidden, icon visible ----
