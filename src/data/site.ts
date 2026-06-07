@@ -38,10 +38,10 @@ export interface Site {
 export const site: Site = {
   // Identity is prefilled from the repo owner; everything else is TODO.
   name: 'Madhav Anand Menon',
-  role: 'TODO: role line — e.g. "CS + Physics @ University"',
+  role: 'Computer Science & Physics + Minor in Mathematics @ UIUC',
   tagline: '// TODO: one-line tagline',
   bio: 'TODO: short bio — a few sentences on who you are and what you work on.',
-  email: 'madhav4@illinois.edu',
+  email: 'madhavanandmenon@gmail.com',
 
   // Single-page anchor navigation.
   nav: [
@@ -55,9 +55,9 @@ export const site: Site = {
   // resume.pdf lives in /public (relocated from your old assets).
   links: [
     { label: 'Resume', href: '/resume.pdf' },
-    { label: 'Email', href: 'mailto:madhav4@illinois.edu' },
-    { label: 'LinkedIn', href: '#TODO', external: true },
-    { label: 'GitHub', href: '#TODO', external: true },
+    { label: 'Email', href: 'mailto:madhavanandmenon@gmail.com' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhav-anand-menon/', external: true },
+    { label: 'GitHub', href: 'https://github.com/MadhavMenon10', external: true },
   ],
 };
 
