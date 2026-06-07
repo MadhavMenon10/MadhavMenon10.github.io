@@ -54,7 +54,7 @@ export const site: Site = {
   // Prominent links row. Replace '#TODO' with real URLs.
   // resume.pdf lives in /public (relocated from your old assets).
   links: [
-    { label: 'Resume', href: '/resume.pdf' },
+    { label: 'Resume', href: '/resume.pdf', external: true },
     { label: 'Email', href: 'mailto:madhavanandmenon@gmail.com' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhav-anand-menon/', external: true },
     { label: 'GitHub', href: 'https://github.com/MadhavMenon10', external: true },
