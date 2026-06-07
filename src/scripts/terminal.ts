@@ -7,24 +7,31 @@
      - Red dot  → collapses the terminal wrapper; floating reopen button appears.
      - Yellow dot → animates typing "clear", then resets to the empty prompt.
      - Green dot → no-op.
+     - Nav / in-page anchor links → auto-reopen + auto-reveal + scroll to section.
    No-JS fallback: handled in CSS (html.js selector) — content always visible.
 =========================================================================== */
 
 export function initTerminal(): void {
-  const wrapper  = document.getElementById('terminal-wrapper');
-  const intro    = document.getElementById('term-intro');
-  const content  = document.getElementById('term-content');
-  const typedEl  = document.getElementById('term-typed');
-  const closeDot = document.getElementById('term-close');
-  const clearDot = document.getElementById('term-clear');
-  const reopenBtn = document.getElementById('term-reopen');
+  const wrapper   = document.getElementById('terminal-wrapper');
+  const intro     = document.getElementById('term-intro');
+  const content   = document.getElementById('term-content');
+  const typedEl   = document.getElementById('term-typed');
+  const closeDot  = document.getElementById('term-close');
+  const clearDot  = document.getElementById('term-clear');
+  const reopenBtn = document.getElementById('term-reopen') as HTMLButtonElement | null;
 
   if (!intro || !content || !typedEl || !closeDot || !clearDot || !reopenBtn) return;
+
+  // Move the reopen button to <body> immediately so it is never a descendant
+  // of the wrapper that gets hidden. position:fixed keeps it visually fixed.
+  document.body.appendChild(reopenBtn);
 
   let typed    = '';
   let revealed = false;
   let closed   = false;
   let clearing = false;
+
+  const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---- reveal: instantly show all content ----
   function reveal(): void {
@@ -100,6 +107,37 @@ export function initTerminal(): void {
 
     document.addEventListener('keydown', handleKey);
   }
+
+  // ---- in-page anchor links: auto-open + auto-reveal + scroll ----
+  // Intercepts clicks on any <a href="#..."> whose target section lives inside
+  // #term-content. If the terminal is closed or in intro mode, we open/reveal
+  // it first so the section is actually visible before scrolling.
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    if (!a) return;
+
+    const hash = a.getAttribute('href');
+    if (!hash || hash === '#') return;
+
+    // Only act if the target section is inside the terminal content area.
+    const target = document.querySelector<HTMLElement>(hash);
+    if (!target || !content.contains(target)) return;
+
+    // Already open and revealed — nothing to do, let the browser scroll.
+    if (!closed && revealed) return;
+
+    e.preventDefault();
+
+    if (closed) reopenTerm();
+    if (!revealed) reveal();
+
+    // Wait two frames for the browser to apply display changes and recalc layout.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+  });
 
   // ---- wire up dots ----
   closeDot.addEventListener('click', closeTerm);

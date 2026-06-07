@@ -1,6 +1,6 @@
 ---
 title: "Hello World!"
-date: June 01 2026
+date: June 07 2026
 blurb: "Hello World! My website is now live."
 draft: false
 ---
