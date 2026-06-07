@@ -17,9 +17,7 @@ import { site } from '../data/site';
         {site.name}
       </h1>
 
-      <p class="mt-5 max-w-xl font-mono text-sm text-fg-dim sm:text-base">
-        {site.tagline}
-      </p>
+      <p class="hero-tagline mt-5 max-w-xl font-mono text-sm text-fg-dim sm:text-base" set:html={site.tagline} />
     </div>
 
     <!-- Circular headshot -->

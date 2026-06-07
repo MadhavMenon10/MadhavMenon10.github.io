@@ -199,6 +199,20 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 .terminal-body { padding: clamp(1.25rem, 3.5vw, 2.5rem); }
 
 /* ===========================================================================
+   Hero tagline inline links (e.g. company name hyperlinks).
+=========================================================================== */
+.hero-tagline a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent-dim);
+  transition: text-decoration-color 0.15s ease;
+}
+.hero-tagline a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* ===========================================================================
    Hero headshot — circular photo right of the name block on desktop.
 =========================================================================== */
 .hero-headshot-wrap {
