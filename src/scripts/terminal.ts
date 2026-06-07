@@ -296,4 +296,14 @@ export function initTerminal(): void {
   });
 
   reopenBtn.addEventListener('click', openTerm);
+
+  // Clicking the site name in the nav closes the terminal and returns to the
+  // hero / icon view.
+  const navName = document.querySelector<HTMLAnchorElement>('a[href="#top"]');
+  if (navName) {
+    navName.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeTerm();
+    });
+  }
 }
