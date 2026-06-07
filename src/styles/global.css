@@ -197,6 +197,73 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 }
 .terminal-body { padding: clamp(1.25rem, 3.5vw, 2.5rem); }
 
+/* ---------------------------------------------------------------------------
+   Terminal interactive intro (terminal.ts)
+--------------------------------------------------------------------------- */
+
+/* Without JS: content is always visible; intro panel is hidden (no gate). */
+#term-intro { display: none; }
+
+/* With JS: show intro, hide content until the user types "learn more". */
+html.js #term-intro                          { display: block; }
+html.js #term-content:not(.term-shown)       { display: none; }
+html.js #term-intro.term-intro-gone          { display: none; }
+
+/* Prompt line: ps1 + typed text + blinking cursor */
+.term-prompt-line {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.term-ps1     { color: var(--accent); }
+#term-typed   { color: var(--fg); }
+.term-cursor  {
+  color: var(--accent);
+  animation: term-blink 1s steps(1) infinite;
+}
+@keyframes term-blink { 50% { opacity: 0; } }
+
+/* "Type learn more" hint below the prompt */
+.term-hint {
+  margin-top: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--fg-dim);
+}
+.term-hint-cmd { color: var(--accent); }
+
+/* Interactive dots need a pointer */
+#term-close,
+#term-clear { cursor: pointer; }
+
+/* Floating reopen button — appears when terminal is closed via red dot */
+.term-reopen-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--term-bar);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--fg-dim);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.term-reopen-btn:hover {
+  opacity: 1;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.term-reopen-btn[hidden] { display: none; }
+
 /* ===========================================================================
    SM (streaming multiprocessor) diagram — GpuDiagram.astro
 =========================================================================== */

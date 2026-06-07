@@ -82,13 +82,13 @@ export interface GpuUnitDef {
 
 export const gpu: { units: GpuUnitDef[] } = {
   units: [
-    { id: 'l1',     label: 'L1 I-Cache',  desc: 'the instruction stream — my background', cmd: 'cat ~/about',                  kind: 'section', target: '#about' },
-    { id: 'int',    label: 'INT32',       desc: 'integer & systems / low-level work',     cmd: 'ls projects --domain=systems', kind: 'filter',  target: 'int' },
-    { id: 'fp32',   label: 'FP32',        desc: 'single precision — ML & data',           cmd: 'ls projects --domain=ml',      kind: 'filter',  target: 'fp32' },
-    { id: 'fp64',   label: 'FP64',        desc: 'double precision — science & cosmology', cmd: 'ls projects --domain=science', kind: 'filter',  target: 'fp64' },
-    { id: 'tensor', label: 'Tensor Core', desc: 'tensor cores — deep learning',           cmd: 'ls projects --domain=ai',      kind: 'filter',  target: 'tensor' },
-    { id: 'ldst',   label: 'LD/ST',       desc: 'load / store — find me elsewhere',       cmd: 'cat ~/links',                  kind: 'section', target: '#links' },
-    { id: 'sfu',    label: 'SFU',         desc: 'special functions — writing',            cmd: 'cat ~/writing',                kind: 'section', target: '#writing' },
-    { id: 'tma',    label: 'TMA',         desc: 'tensor memory accelerator — email me',   cmd: 'mail madhav',                  kind: 'mailto',  target: 'madhav4@illinois.edu' },
+    { id: 'l1',     label: '~/about',   desc: 'my background · who I am',              cmd: 'cat ~/about',         kind: 'section', target: '#about' },
+    { id: 'int',    label: 'systems',   desc: 'low-level · OS · compilers · C/C++',   cmd: 'ls ~/projects --sys', kind: 'filter',  target: 'int' },
+    { id: 'fp32',   label: 'ml & data', desc: 'machine learning · data science',       cmd: 'ls ~/projects --ml',  kind: 'filter',  target: 'fp32' },
+    { id: 'fp64',   label: 'science',   desc: 'physics · cosmology · simulation',      cmd: 'ls ~/projects --sci', kind: 'filter',  target: 'fp64' },
+    { id: 'tensor', label: 'ai & dl',   desc: 'deep learning · neural nets · LLMs',   cmd: 'ls ~/projects --ai',  kind: 'filter',  target: 'tensor' },
+    { id: 'ldst',   label: '~/links',   desc: 'load / store · find me elsewhere',      cmd: 'open ~/links',        kind: 'section', target: '#links' },
+    { id: 'sfu',    label: '~/write',   desc: 'special function · blog & essays',      cmd: 'cat ~/writing',       kind: 'section', target: '#writing' },
+    { id: 'tma',    label: 'contact',   desc: 'high-bandwidth async comms · email me', cmd: 'mail madhav',         kind: 'mailto',  target: 'madhav4@illinois.edu' },
   ],
 };

@@ -1,8 +1,15 @@
 ---
 /*
-  Terminal window that frames the main content. Tinted/translucent body so the
-  WebGL grid background shows faintly through (see .terminal in global.css).
-  Themed for dark and light. Accepts an optional window title.
+  Terminal window. Initially empty — shows a bash prompt with a "learn more"
+  hint. Typing "learn more" (case-insensitive) reveals all content instantly.
+
+  Dot behavior (wired in terminal.ts):
+    Red    → collapses the terminal; a floating reopen button appears.
+    Yellow → animates "clear" into the prompt, then resets to empty state.
+    Green  → no-op.
+
+  No-JS fallback: CSS (html.js selector) keeps content visible by default;
+  the intro panel is hidden without JS so nothing is locked behind the gate.
 */
 interface Props {
   title?: string;
@@ -10,16 +17,75 @@ interface Props {
 const { title = 'madhav@portfolio: ~' } = Astro.props;
 ---
 
-<div class="terminal">
+<div class="terminal" id="main-terminal">
   <div class="terminal-bar">
     <span class="terminal-dots" aria-hidden="true">
-      <span class="dot dot-r"></span>
-      <span class="dot dot-y"></span>
-      <span class="dot dot-g"></span>
+      <span
+        class="dot dot-r"
+        id="term-close"
+        role="button"
+        tabindex="0"
+        title="close"
+        aria-label="Close terminal"
+      ></span>
+      <span
+        class="dot dot-y"
+        id="term-clear"
+        role="button"
+        tabindex="0"
+        title="clear"
+        aria-label="Clear terminal"
+      ></span>
+      <span class="dot dot-g" aria-hidden="true"></span>
     </span>
     <span class="terminal-title">{title}</span>
   </div>
+
   <div class="terminal-body">
-    <slot />
+    <!-- Intro prompt: hidden without JS, shown by CSS when html.js is present -->
+    <div id="term-intro">
+      <div class="term-prompt-line">
+        <span class="term-ps1">madhav@portfolio:~$&nbsp;</span><span
+          id="term-typed"></span><span class="term-cursor">▋</span>
+      </div>
+      <p class="term-hint">
+        // type <span class="term-hint-cmd">"learn more"</span> to explore
+      </p>
+    </div>
+
+    <!-- Content: always visible without JS; JS hides it until revealed -->
+    <div id="term-content">
+      <slot />
+    </div>
   </div>
 </div>
+
+<!-- Floating reopen button — shown only after the terminal is closed -->
+<button
+  id="term-reopen"
+  class="term-reopen-btn"
+  aria-label="Reopen terminal"
+  title="Reopen terminal"
+  hidden
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <polyline points="4 17 10 11 4 5"></polyline>
+    <line x1="12" y1="19" x2="20" y2="19"></line>
+  </svg>
+</button>
+
+<script>
+  import { initTerminal } from '../scripts/terminal';
+  initTerminal();
+</script>

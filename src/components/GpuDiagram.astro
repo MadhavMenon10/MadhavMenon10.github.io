@@ -1,22 +1,38 @@
 ---
 /*
-  Interactive Streaming Multiprocessor (SM) "site map". A stylized modern NVIDIA
-  SM (Hopper-class) whose functional units are clickable: cores filter the
-  project grid by domain; other units jump to sections / email. See gpu-map.ts
-  for behavior and src/data/site.ts (`gpu`) for the unit -> destination mapping.
+  Portfolio "Streaming Multiprocessor" — a GPU SM whose functional units map
+  directly to sections of this site.
 
-  Each unit type appears in all 4 processing blocks; the FIRST instance is the
-  keyboard-focusable, ARIA-labeled "representative" (real link, works with no
-  JS), the rest are aria-hidden duplicates (still mouse-clickable + highlight).
+  Architecture as site metaphor:
+    ~/about           (L1 cache)   → about section
+    Four processing blocks, each labeled for a project domain:
+      Block 0  "// systems"        — INT32-analog cores filter systems projects
+      Block 1  "// ml & data"      — FP32-analog cores filter ML projects
+      Block 2  "// science"        — FP64-analog cores filter science projects
+      Block 3  "// ai · dl"        — Tensor cores filter AI/DL projects
+    ~/links           (LD/ST)      → links section
+    ~/write           (SFU)        → writing section
+    contact           (TMA)        → mailto
+
+  Cores labelled SYS / ML / SCI (the main interactive filter units) with
+  the domain-specific L0 bar clarifying what each block "specializes" in.
+  See gpu-map.ts for interaction behavior; site.ts for unit → destination.
 */
 import { gpu } from '../data/site';
 import GpuUnit from './GpuUnit.astro';
 
 const blocks = [0, 1, 2, 3];
-const lanes = Array.from({ length: 16 });
-const ldst = Array.from({ length: 8 });
+const lanes  = Array.from({ length: 16 });
+const ldst   = Array.from({ length: 8 });
 
-const meta = Object.fromEntries(gpu.units.map((u) => [u.id, u]));
+const blockMeta = [
+  { l0: '// systems',   warp: 'scheduler · nav', dispatch: 'gpu-map.ts', reg: 'content/*.md' },
+  { l0: '// ml & data', warp: 'scheduler · nav', dispatch: 'gpu-map.ts', reg: 'content/*.md' },
+  { l0: '// science',   warp: 'scheduler · nav', dispatch: 'gpu-map.ts', reg: 'content/*.md' },
+  { l0: '// ai · dl',   warp: 'scheduler · nav', dispatch: 'gpu-map.ts', reg: 'content/*.md' },
+];
+
+const meta   = Object.fromEntries(gpu.units.map((u) => [u.id, u]));
 const hrefFor = (id: string) => {
   const u = meta[id];
   if (u.kind === 'filter') return '#projects';
@@ -28,52 +44,53 @@ const hrefFor = (id: string) => {
 <figure
   class="gpu"
   data-reveal
-  aria-label="Interactive streaming-multiprocessor map. An L1 instruction cache, four processing blocks of INT32/FP32/FP64 cores and a 4th-gen tensor core, load/store units, an SFU, and a tensor memory accelerator — each links to part of the site; the core types filter the projects below."
+  aria-label="Interactive portfolio site map rendered as a GPU streaming multiprocessor. ~/about at the top links to the about section; four processing blocks — systems, ml & data, science, ai · dl — contain core units that filter projects by domain; LD/ST links to the links section; SFU links to writing; contact at the bottom opens email."
 >
   <p class="gpu-hint">
-    <b>// interactive</b> — hover or click a compute unit. cores filter projects; others jump.
+    <b>// interactive</b> — hover or click a compute unit · cores filter projects · others navigate
   </p>
 
   <div class="gpu-scroll">
     <div class="gpu-sm">
+
       <GpuUnit unit="l1" rep meta={meta.l1} href={hrefFor('l1')} cls="gpu-cache gpu-l1">
-        L1 Instruction Cache
+        ~/about
       </GpuUnit>
 
       <div class="gpu-quad">
         {
           blocks.map((b) => (
             <div class="gpu-block">
-              <div class="gpu-bar gpu-l0">L0 Instruction Cache</div>
-              <div class="gpu-bar gpu-warp">Warp Scheduler (32 thread/clk)</div>
-              <div class="gpu-bar gpu-dispatch">Dispatch Unit (32 thread/clk)</div>
-              <div class="gpu-bar gpu-reg">Register File (16,384 &times; 32-bit)</div>
+              <div class="gpu-bar gpu-l0">{blockMeta[b].l0}</div>
+              <div class="gpu-bar gpu-warp">{blockMeta[b].warp}</div>
+              <div class="gpu-bar gpu-dispatch">{blockMeta[b].dispatch}</div>
+              <div class="gpu-bar gpu-reg">{blockMeta[b].reg}</div>
 
               <div class="gpu-cores">
                 <GpuUnit unit="int" rep={b === 0} meta={meta.int} href={hrefFor('int')} cls="gpu-col gpu-int">
-                  {lanes.map(() => <span>INT32</span>)}
+                  {lanes.map(() => <span>SYS</span>)}
                 </GpuUnit>
                 <GpuUnit unit="fp32" rep={b === 0} meta={meta.fp32} href={hrefFor('fp32')} cls="gpu-col gpu-fp32">
-                  {lanes.map(() => <span>FP32</span>)}
+                  {lanes.map(() => <span>ML</span>)}
                 </GpuUnit>
                 <GpuUnit unit="fp32" rep={false} meta={meta.fp32} href={hrefFor('fp32')} cls="gpu-col gpu-fp32">
-                  {lanes.map(() => <span>FP32</span>)}
+                  {lanes.map(() => <span>ML</span>)}
                 </GpuUnit>
                 <GpuUnit unit="fp64" rep={b === 0} meta={meta.fp64} href={hrefFor('fp64')} cls="gpu-col gpu-fp64">
-                  {lanes.map(() => <span>FP64</span>)}
+                  {lanes.map(() => <span>SCI</span>)}
                 </GpuUnit>
                 <GpuUnit unit="tensor" rep={b === 0} meta={meta.tensor} href={hrefFor('tensor')} cls="gpu-tensor">
-                  <span class="gpu-tensor-t">TENSOR CORE</span>
-                  <span class="gpu-tensor-s">4TH GEN</span>
+                  <span class="gpu-tensor-t">AI / DL</span>
+                  <span class="gpu-tensor-s">tensor core</span>
                 </GpuUnit>
               </div>
 
               <div class="gpu-units">
                 <GpuUnit unit="ldst" rep={b === 0} meta={meta.ldst} href={hrefFor('ldst')} cls="gpu-ldst-group">
-                  {ldst.map(() => <span class="gpu-ldst">LD/ST</span>)}
+                  {ldst.map(() => <span class="gpu-ldst">link</span>)}
                 </GpuUnit>
                 <GpuUnit unit="sfu" rep={b === 0} meta={meta.sfu} href={hrefFor('sfu')} cls="gpu-sfu">
-                  SFU
+                  write
                 </GpuUnit>
               </div>
             </div>
@@ -82,18 +99,19 @@ const hrefFor = (id: string) => {
       </div>
 
       <GpuUnit unit="tma" rep meta={meta.tma} href={hrefFor('tma')} cls="gpu-cache gpu-tma">
-        Tensor Memory Accelerator
+        contact
       </GpuUnit>
+
     </div>
   </div>
 
   <div class="gpu-readout" aria-hidden="true">
     <span class="gpu-prompt">madhav@portfolio:~$</span>
-    <span class="gpu-cmd">// hover a unit · click to run</span><span class="gpu-caret">&#9612;</span>
+    <span class="gpu-cmd">// hover a unit · click to navigate</span><span class="gpu-caret">&#9612;</span>
   </div>
 
   <figcaption class="gpu-cap">
-    streaming multiprocessor — a clickable map of the site
+    portfolio SM · a clickable map of the site
   </figcaption>
 </figure>
 
