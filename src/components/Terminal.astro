@@ -60,29 +60,17 @@ const { title = 'madhav@portfolio: ~' } = Astro.props;
   </div>
 </div>
 
-<!-- Floating reopen button — shown only after the terminal is closed -->
+<!-- Terminal app icon — shown only after the terminal is closed via red dot -->
 <button
   id="term-reopen"
   class="term-reopen-btn"
-  aria-label="Reopen terminal"
-  title="Reopen terminal"
+  aria-label="Open terminal"
+  title="Open terminal"
   hidden
 >
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <polyline points="4 17 10 11 4 5"></polyline>
-    <line x1="12" y1="19" x2="20" y2="19"></line>
-  </svg>
+  <span class="term-icon-inner" aria-hidden="true">
+    <span class="term-icon-line term-icon-prompt">&gt;_</span>
+  </span>
 </button>
 
 <script>

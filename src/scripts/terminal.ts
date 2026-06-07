@@ -2,14 +2,18 @@
    terminal.ts — interactive terminal intro experience.
 
    Flow:
-     - On load (JS active): show empty bash prompt, hide all content.
+     - On load: if the user revealed the terminal this session, skip the intro.
+     - Otherwise: show empty bash prompt, hide all content.
      - User types "learn more" (case-insensitive) → content reveals immediately.
-     - Red dot  → collapses the terminal wrapper; floating reopen button appears.
-     - Yellow dot → animates typing "clear", then resets to the empty prompt.
+     - Red dot  → collapses the terminal wrapper; a terminal app icon appears.
+     - Yellow dot → animates typing "clear", resets to the empty prompt (and
+       clears the session flag so "learn more" is required again).
      - Green dot → no-op.
-     - Nav / in-page anchor links → auto-reopen + auto-reveal + scroll to section.
+     - Nav / in-page anchor links → auto-reopen + auto-reveal + scroll.
    No-JS fallback: handled in CSS (html.js selector) — content always visible.
 =========================================================================== */
+
+const SESSION_KEY = 'terminal-revealed';
 
 export function initTerminal(): void {
   const wrapper   = document.getElementById('terminal-wrapper');
@@ -22,8 +26,8 @@ export function initTerminal(): void {
 
   if (!intro || !content || !typedEl || !closeDot || !clearDot || !reopenBtn) return;
 
-  // Move the reopen button to <body> immediately so it is never a descendant
-  // of the wrapper that gets hidden. position:fixed keeps it visually fixed.
+  // Move the reopen button to <body> so it is never inside the hidden wrapper.
+  // position:fixed keeps it visually in place regardless of DOM parent.
   document.body.appendChild(reopenBtn);
 
   let typed    = '';
@@ -37,10 +41,16 @@ export function initTerminal(): void {
   function reveal(): void {
     if (revealed) return;
     revealed = true;
+    try { sessionStorage.setItem(SESSION_KEY, 'true'); } catch (_) { /* private browsing */ }
     document.removeEventListener('keydown', handleKey);
     intro.classList.add('term-intro-gone');
     content.classList.add('term-shown');
   }
+
+  // ---- skip intro if user already revealed the terminal this session ----
+  let startRevealed = false;
+  try { startRevealed = sessionStorage.getItem(SESSION_KEY) === 'true'; } catch (_) { /* */ }
+  if (startRevealed) reveal();
 
   // ---- keyboard capture (active only in intro/unrevealed state) ----
   function handleKey(e: KeyboardEvent): void {
@@ -65,7 +75,7 @@ export function initTerminal(): void {
     if (typed.toLowerCase() === 'learn more') reveal();
   }
 
-  // ---- red dot: close terminal, show floating reopen button ----
+  // ---- red dot: close terminal, show app icon ----
   function closeTerm(): void {
     if (closed) return;
     closed = true;
@@ -73,7 +83,7 @@ export function initTerminal(): void {
     reopenBtn.hidden = false;
   }
 
-  // ---- reopen button: restore terminal ----
+  // ---- app icon click: restore terminal ----
   function reopenTerm(): void {
     closed = false;
     if (wrapper) wrapper.hidden = false;
@@ -97,11 +107,12 @@ export function initTerminal(): void {
     }
     await sleep(220);
 
-    // Reset to initial state
+    // Reset to initial state and clear the session flag
     typed    = '';
     revealed = false;
     clearing = false;
     typedEl.textContent = '';
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (_) { /* */ }
     intro.classList.remove('term-intro-gone');
     content.classList.remove('term-shown');
 
@@ -109,9 +120,8 @@ export function initTerminal(): void {
   }
 
   // ---- in-page anchor links: auto-open + auto-reveal + scroll ----
-  // Intercepts clicks on any <a href="#..."> whose target section lives inside
-  // #term-content. If the terminal is closed or in intro mode, we open/reveal
-  // it first so the section is actually visible before scrolling.
+  // Intercepts any <a href="#..."> whose target section lives inside
+  // #term-content. Opens and reveals the terminal if needed, then scrolls.
   document.addEventListener('click', (e) => {
     const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
     if (!a) return;
@@ -119,7 +129,6 @@ export function initTerminal(): void {
     const hash = a.getAttribute('href');
     if (!hash || hash === '#') return;
 
-    // Only act if the target section is inside the terminal content area.
     const target = document.querySelector<HTMLElement>(hash);
     if (!target || !content.contains(target)) return;
 
@@ -131,7 +140,7 @@ export function initTerminal(): void {
     if (closed) reopenTerm();
     if (!revealed) reveal();
 
-    // Wait two frames for the browser to apply display changes and recalc layout.
+    // Wait two frames for display changes and layout recalculation.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         target.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
@@ -152,6 +161,6 @@ export function initTerminal(): void {
 
   reopenBtn.addEventListener('click', reopenTerm);
 
-  // ---- start capturing keys ----
-  document.addEventListener('keydown', handleKey);
+  // ---- start capturing keys (skip if already revealed) ----
+  if (!startRevealed) document.addEventListener('keydown', handleKey);
 }
