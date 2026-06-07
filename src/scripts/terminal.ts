@@ -2,15 +2,17 @@
    terminal.ts — interactive terminal intro experience.
 
    Home page:
-     - Starts closed: terminal hidden, centered app icon shown.
-     - Click icon → terminal opens as a fixed overlay that NEVER moves when the
-       user scrolls (position: fixed, applied via inline styles to guarantee
-       specificity over any Tailwind/CSS overrides).  The terminal-body scrolls
-       its own content independently, like a real app window.
+     - Starts closed: terminal hidden, centered app icon shown below hero.
+     - Portal pattern: a JS-created `position:fixed` div covers the viewport.
+       Both the terminal window and the reopen icon live inside it as
+       `position:absolute` children.  This is the only reliable way to
+       guarantee fixed behaviour regardless of CSS class rules, backdrop-filter
+       siblings, or any stacking-context quirks in the rest of the page.
+     - Click icon → terminal opens (icon hidden).
      - First open: shows "type learn more" prompt.
      - Return visit (same session): skips prompt, shows content directly.
      - Type "learn more" → content reveals instantly.
-     - Red dot  → closes terminal; app icon reappears.
+     - Red dot  → closes terminal; icon reappears.
      - Yellow dot → animates "clear", resets prompt (clears session flag).
      - Green dot → no-op.
      - Nav / anchor links → auto-open + reveal + scroll within terminal.
@@ -24,65 +26,6 @@
 
 const SESSION_KEY = 'terminal-revealed';
 
-/** Inline styles for the terminal when open as a fixed overlay. */
-function showTerm(termEl: HTMLElement): void {
-  termEl.style.cssText = `
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: calc(var(--nav-h) + 0.75rem);
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 2rem);
-    max-width: 48rem;
-    height: calc(100svh - var(--nav-h) - 1.5rem);
-    z-index: 20;
-    overflow: hidden;
-  `;
-  const body = termEl.querySelector<HTMLElement>('.terminal-body');
-  if (body) {
-    body.style.flex = '1';
-    body.style.overflowY = 'auto';
-    body.style.minHeight = '0';
-  }
-}
-
-/** Inline styles to hide the terminal. */
-function hideTerm(termEl: HTMLElement): void {
-  termEl.style.cssText = 'display: none;';
-  const body = termEl.querySelector<HTMLElement>('.terminal-body');
-  if (body) {
-    body.style.flex = '';
-    body.style.overflowY = '';
-    body.style.minHeight = '';
-  }
-}
-
-/** Show the reopen icon — fixed center-screen via inline styles. */
-function showIcon(btn: HTMLButtonElement): void {
-  btn.hidden = false; // remove the HTML hidden attribute so no UA/author rule can block it
-  btn.style.cssText = `
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.1rem;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 50;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-  `;
-}
-
-/** Hide the reopen icon. */
-function hideIcon(btn: HTMLButtonElement): void {
-  btn.style.cssText = 'display: none;';
-}
-
 export function initTerminal(): void {
   const intro   = document.getElementById('term-intro');
   const content = document.getElementById('term-content');
@@ -91,8 +34,6 @@ export function initTerminal(): void {
 
   // ---- Non-home pages: show terminal and content directly (no gate) ----
   if (window.location.pathname !== '/') {
-    // CSS hides #main-terminal via html.js rule; override it so it renders
-    // normally in document flow on post/project pages.
     const termElPost = document.getElementById('main-terminal');
     if (termElPost) termElPost.style.display = 'block';
     intro.classList.add('term-intro-gone');
@@ -111,14 +52,30 @@ export function initTerminal(): void {
 
   if (!termEl || !typedEl || !closeDot || !clearDot || !reopenBtn) return;
 
-  // Lift both elements to <body> so no ancestor's display/overflow traps them.
-  document.body.appendChild(termEl);
-  document.body.appendChild(reopenBtn);
+  // ---- Portal: one JS-created position:fixed layer for the whole terminal UI.
+  //
+  // Why: backdrop-filter on .terminal creates a new stacking context that can
+  // corrupt position:fixed on sibling elements in Chrome/Safari.  By wrapping
+  // everything in a fresh programmatic element (no CSS class, no backdrop),
+  // we guarantee the fixed layer is truly viewport-anchored.
+  const portal = document.createElement('div');
+  portal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    pointer-events: none;
+  `;
+  document.body.appendChild(portal);
 
-  // Collapse the now-empty wrapper permanently.
+  // Move terminal and icon into the portal; collapse the now-empty wrapper.
+  portal.appendChild(termEl);
+  portal.appendChild(reopenBtn);
   if (wrapper) wrapper.hidden = true;
 
-  // Apply initial state via inline styles (highest priority — beats all CSS).
+  // ---- Initial state: terminal hidden, icon visible ----
   hideTerm(termEl);
   showIcon(reopenBtn);
 
@@ -128,6 +85,56 @@ export function initTerminal(): void {
   let clearing = false;
 
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- helpers ----
+
+  function hideTerm(el: HTMLElement): void {
+    el.style.cssText = 'display: none;';
+    const body = el.querySelector<HTMLElement>('.terminal-body');
+    if (body) { body.style.flex = ''; body.style.overflowY = ''; body.style.minHeight = ''; }
+  }
+
+  function showTerm(el: HTMLElement): void {
+    el.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: calc(var(--nav-h) + 0.75rem);
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 2rem);
+      max-width: 48rem;
+      height: calc(100% - var(--nav-h) - 1.5rem);
+      overflow: hidden;
+      pointer-events: auto;
+    `;
+    const body = el.querySelector<HTMLElement>('.terminal-body');
+    if (body) { body.style.flex = '1'; body.style.overflowY = 'auto'; body.style.minHeight = '0'; }
+  }
+
+  function showIcon(btn: HTMLButtonElement): void {
+    btn.hidden = false;
+    btn.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.1rem;
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      z-index: 10;
+    `;
+  }
+
+  function hideIcon(btn: HTMLButtonElement): void {
+    btn.style.cssText = 'display: none;';
+  }
 
   // ---- reveal: show all content ----
   function reveal(): void {
@@ -139,14 +146,14 @@ export function initTerminal(): void {
     content.classList.add('term-shown');
   }
 
-  // ---- open: show terminal as fixed overlay ----
+  // ---- open: show terminal as overlay ----
   function openTerm(): void {
     if (!closed) return;
     closed = false;
     showTerm(termEl);
     hideIcon(reopenBtn);
+    portal.style.pointerEvents = 'none'; // terminal/button have their own pointer-events
     if (scrollPrompt) scrollPrompt.hidden = false;
-    // Prevent the page from scrolling behind the fixed terminal.
     document.body.style.overflow = 'hidden';
 
     let wasRevealed = false;
@@ -168,11 +175,10 @@ export function initTerminal(): void {
     hideTerm(termEl);
     showIcon(reopenBtn);
     if (scrollPrompt) scrollPrompt.hidden = true;
-    // Restore page scroll.
     document.body.style.overflow = '';
   }
 
-  // ---- keyboard capture (home page, open, unrevealed) ----
+  // ---- keyboard capture ----
   function handleKey(e: KeyboardEvent): void {
     if (revealed || closed || clearing) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -191,11 +197,10 @@ export function initTerminal(): void {
 
     typed += e.key;
     typedEl.textContent = typed;
-
     if (typed.toLowerCase() === 'learn more') reveal();
   }
 
-  // ---- yellow dot: animate "clear", reset to empty prompt ----
+  // ---- yellow dot: animate "clear", reset ----
   const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
   async function clearTerm(): Promise<void> {
@@ -211,18 +216,15 @@ export function initTerminal(): void {
     }
     await sleep(220);
 
-    typed    = '';
-    revealed = false;
-    clearing = false;
+    typed = ''; revealed = false; clearing = false;
     typedEl.textContent = '';
     try { sessionStorage.removeItem(SESSION_KEY); } catch (_) { /* */ }
     intro.classList.remove('term-intro-gone');
     content.classList.remove('term-shown');
-
     document.addEventListener('keydown', handleKey);
   }
 
-  // ---- anchor clicks: auto-open + reveal + scroll within terminal ----
+  // ---- anchor clicks: auto-open + reveal + scroll ----
   document.addEventListener('click', (e) => {
     const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
     if (!a) return;
@@ -230,7 +232,7 @@ export function initTerminal(): void {
     if (!hash || hash === '#') return;
     const target = document.querySelector<HTMLElement>(hash);
     if (!target || !content.contains(target)) return;
-    if (!closed && revealed) return; // already open, let internal scroll handle it
+    if (!closed && revealed) return;
 
     e.preventDefault();
     if (closed) openTerm();
@@ -243,7 +245,7 @@ export function initTerminal(): void {
     });
   });
 
-  // ---- handle arriving via /#hash (from post page nav links) ----
+  // ---- handle arriving via /#hash (from post page nav) ----
   const initHash = window.location.hash;
   if (initHash && initHash !== '#') {
     const hashTarget = document.querySelector<HTMLElement>(initHash);
