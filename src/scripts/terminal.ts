@@ -83,6 +83,24 @@ export function initTerminal(): void {
   document.body.style.overflow = 'hidden';
   document.documentElement.style.overflow = 'hidden';
 
+  // Pin the footer to the bottom of the viewport as a slim bar.
+  // It lives in document flow below the 100svh hero, so overflow:hidden
+  // would hide it — repositioning it via inline style keeps it visible.
+  const footer = document.querySelector<HTMLElement>('footer');
+  if (footer) {
+    footer.style.position = 'fixed';
+    footer.style.bottom   = '0';
+    footer.style.left     = '0';
+    footer.style.right    = '0';
+    footer.style.zIndex   = '15';
+    footer.style.paddingTop    = '0.5rem';
+    footer.style.paddingBottom = '0.5rem';
+    // Remove the decorative top-border + padding from the inner bar
+    // (they look right in flow, not as a slim fixed bar).
+    const inner = footer.querySelector<HTMLElement>('div');
+    if (inner) { inner.style.borderTop = 'none'; inner.style.paddingTop = '0'; }
+  }
+
   // ---- Initial state: terminal hidden, icon visible ----
   hideTerm(termEl);
   showIcon(reopenBtn);
