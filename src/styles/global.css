@@ -163,7 +163,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 }
 
 /* ===========================================================================
-   Terminal window — frames the main content, tinted so the grid shows through.
+   Terminal window — base styles shared by home page and post pages.
 =========================================================================== */
 .terminal {
   border: 1px solid var(--border);
@@ -183,6 +183,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
   padding: 9px 14px;
   border-bottom: 1px solid var(--border);
   background: var(--term-bar);
+  flex-shrink: 0; /* keeps bar at fixed height in flex column */
 }
 .terminal-dots { display: inline-flex; gap: 7px; }
 .dot { width: 11px; height: 11px; border-radius: 50%; }
@@ -196,6 +197,38 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
   color: var(--fg-dim);
 }
 .terminal-body { padding: clamp(1.25rem, 3.5vw, 2.5rem); }
+
+/* ---------------------------------------------------------------------------
+   Home page fixed-overlay terminal (terminal.ts adds .is-home to <body>
+   and .term-window-open to #main-terminal when the user opens it).
+   Post-page terminals are unaffected — they never get these classes.
+--------------------------------------------------------------------------- */
+
+/* Home page: terminal starts hidden; becomes a fixed overlay when opened. */
+.is-home #main-terminal { display: none; }
+
+.is-home #main-terminal.term-window-open {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: calc(var(--nav-h) + 0.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2rem);
+  max-width: 48rem;
+  /* Fill the viewport between the nav and a small bottom gap */
+  height: calc(100svh - var(--nav-h) - 1.5rem);
+  z-index: 20;
+  overflow: hidden;
+}
+
+/* Terminal body scrolls independently; the window frame stays fixed. */
+.is-home #main-terminal.term-window-open .terminal-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0; /* required for overflow in a flex child */
+  /* Keep the padding from the base rule */
+}
 
 /* ---------------------------------------------------------------------------
    Terminal interactive intro (terminal.ts)
@@ -306,6 +339,35 @@ html.js #term-intro.term-intro-gone          { display: none; }
 .term-reopen-btn:hover .term-icon-label { opacity: 1; }
 
 .term-reopen-btn[hidden] { display: none; }
+
+/* Fixed scroll indicator — shown at the bottom of the viewport when the
+   terminal is open, hinting that the terminal body is scrollable. */
+.scroll-prompt {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
+  animation: scroll-drift 2.6s ease-in-out infinite;
+}
+.scroll-prompt[hidden] { display: none; }
+.scroll-prompt-label { font-size: 0.6rem; }
+
+@keyframes scroll-drift {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(5px); }
+}
 
 /* ===========================================================================
    SM (streaming multiprocessor) diagram — GpuDiagram.astro
