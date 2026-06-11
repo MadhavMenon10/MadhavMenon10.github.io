@@ -29,7 +29,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
           const href = post.data.link ?? `/writing/${post.id}`;
           const external = Boolean(post.data.link);
           return (
-            <li class="border-l-2 border-border pl-5 transition-colors hover:border-accent">
+            <li class="relative border-l-2 border-border pl-5 transition-colors hover:border-accent">
               <p class="mb-1 font-mono text-xs text-fg-dim">
                 <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
               </p>
@@ -38,7 +38,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
                   href={href}
                   target={external ? '_blank' : undefined}
                   rel={external ? 'noopener noreferrer' : undefined}
-                  class="transition-colors hover:text-accent"
+                  class="transition-colors hover:text-accent after:absolute after:inset-0 after:content-['']"
                 >
                   {post.data.title}
                   {external && <span aria-hidden="true"> &#8599;</span>}
