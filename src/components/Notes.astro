@@ -1,0 +1,55 @@
+---
+import { notes } from '../data/site';
+
+// Latest semester first (Spring sorts before Fall within a year), then by
+// course code alphabetically — e.g. MATH before PHYS in the same semester.
+const termRank = (t: string) => (t === 'Spring' ? 1 : 2);
+const sortKey = (n: (typeof notes)[number]) => n.year * 10 + termRank(n.term);
+const sorted = [...notes].sort(
+  (a, b) => sortKey(b) - sortKey(a) || a.code.localeCompare(b.code)
+);
+---
+
+<section id="notes" class="reveal border-t border-border/60 py-9" data-reveal>
+  <h2 class="mb-4 font-mono text-sm text-accent">
+    <span class="text-fg-dim">~/</span>Notes
+  </h2>
+
+  <p class="mb-3 text-sm leading-relaxed text-fg-dim">
+    Some of my notes from courses I've taken at UIUC.
+  </p>
+  <p class="mb-8 text-xs leading-relaxed text-fg-dim">
+    Some of these notes were written by hand and transcribed to LaTeX with AI, and
+    some sections may be incomplete where they weren't covered in class. These
+    notes will be updated soon.
+  </p>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {
+      sorted.map((n) => (
+        <article class="flex flex-col rounded-lg border border-border bg-bg-elev p-5 transition-colors hover:border-border-hover">
+          <p class="mb-2 font-mono text-xs text-fg-dim">{`${n.term} ${n.year}`}</p>
+          <h3 class="mb-1 font-mono text-sm font-semibold text-fg">{n.code}</h3>
+          {
+            n.pdf ? (
+              <a
+                href={n.pdf}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-mono text-sm text-fg-dim transition-colors hover:text-accent"
+                aria-label={`Open ${n.code} ${n.title} notes (PDF) in a new tab`}
+              >
+                {n.title}
+                <span aria-hidden="true"> &#8599;</span>
+              </a>
+            ) : (
+              <p class="font-mono text-sm text-fg-dim">
+                {n.title} <span class="text-fg-dim/70">· notes coming soon</span>
+              </p>
+            )
+          }
+        </article>
+      ))
+    }
+  </div>
+</section>

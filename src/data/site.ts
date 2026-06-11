@@ -49,6 +49,7 @@ export const site: Site = {
     { label: 'Links', href: '#links' },
     { label: 'Projects', href: '#projects' },
     { label: 'Writing', href: '#writing' },
+    { label: 'Notes', href: '#notes' },
   ],
 
   // Prominent links row. Replace '#TODO' with real URLs.
@@ -60,6 +61,32 @@ export const site: Site = {
     { label: 'GitHub', href: 'https://github.com/MadhavMenon10', external: true },
   ],
 };
+
+/* ===========================================================================
+   Course notes (Notes.astro).
+   One entry per course. The card links its title to the notes PDF in /public
+   when `pdf` is set; courses without a PDF render as "coming soon".
+=========================================================================== */
+export interface CourseNote {
+  /** Course code / name, e.g. "MATH 241". */
+  code: string;
+  /** Full course title, e.g. "Calculus III". */
+  title: string;
+  /** Term taken — Spring sorts before Fall within a year. */
+  term: 'Spring' | 'Fall';
+  /** Calendar year taken. */
+  year: number;
+  /** Path to the notes PDF served from /public, or omit if not uploaded yet. */
+  pdf?: string;
+}
+
+export const notes: CourseNote[] = [
+  { code: 'MATH 461',  title: 'Probability Theory',              term: 'Spring', year: 2026, pdf: undefined },
+  { code: 'PHYS 325',  title: 'Classical Mechanics I',           term: 'Spring', year: 2026, pdf: undefined },
+  { code: 'MATH 416H', title: 'Honours Abstract Linear Algebra', term: 'Fall',   year: 2025, pdf: undefined },
+  { code: 'MATH 441',  title: 'Differential Equations',          term: 'Fall',   year: 2025, pdf: undefined },
+  { code: 'MATH 241',  title: 'Calculus III',                    term: 'Spring', year: 2025, pdf: '/notes/math-241-calculus-iii.pdf' },
+];
 
 /* ===========================================================================
    Interactive SM-diagram map (GpuDiagram.astro + gpu-map.ts).
