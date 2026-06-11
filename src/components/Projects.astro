@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import ProjectCard from './ProjectCard.astro';
-import GpuDiagram from './GpuDiagram.astro';
 
 const projects = (
   await getCollection('projects', ({ data }) =>
@@ -15,5 +14,7 @@ const projects = (
     <span class="text-fg-dim">~/</span>Projects
   </h2>
 
-  <p class="font-mono text-sm text-fg-dim">// To be completed</p>
+  <div class="grid gap-4 sm:grid-cols-2">
+    {projects.map((project) => <ProjectCard project={project} />)}
+  </div>
 </section>
