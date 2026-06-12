@@ -22,7 +22,7 @@ const navHref = (href: string) => isHome ? href : '/' + href;
       aria-label={site.name}
       class="hidden font-mono text-sm font-semibold tracking-tight text-fg transition-colors hover:text-accent sm:block"
     >
-      {site.name}<span id="nav-name-glyph" aria-hidden="true" class="ml-1.5 inline-block"></span>
+      <span id="nav-name-glyph" aria-hidden="true" class="mr-1.5 inline-block"></span>{site.name}
     </a>
 
     <div class="flex items-center gap-1 sm:gap-3">
@@ -64,7 +64,7 @@ const navHref = (href: string) => isHome ? href : '/' + href;
       timer = window.setInterval(() => {
         i += 1;
         glyph.textContent = glyphs[i % glyphs.length];
-      }, 150);
+      }, 250);
     };
     const stop = () => {
       if (timer !== null) {
