@@ -18,9 +18,11 @@ const navHref = (href: string) => isHome ? href : '/' + href;
   >
     <a
       href="#top"
+      id="nav-name"
+      aria-label={site.name}
       class="hidden font-mono text-sm font-semibold tracking-tight text-fg transition-colors hover:text-accent sm:block"
     >
-      {site.name}
+      <span id="nav-name-text" aria-hidden="true">{site.name}</span>
     </a>
 
     <div class="flex items-center gap-1 sm:gap-3">
@@ -42,3 +44,40 @@ const navHref = (href: string) => isHome ? href : '/' + href;
     </div>
   </nav>
 </header>
+
+<script>
+  // Hover the name to cycle a glyph through the author's initial across the
+  // scripts/languages he speaks: Malayalam, Tamil, Devanagari (Hindi), English,
+  // Spanish. Restores the full name on leave. Skipped for reduced-motion users.
+  const link = document.getElementById('nav-name');
+  const text = document.getElementById('nav-name-text');
+  if (link && text) {
+    const original = text.textContent || '';
+    const glyphs = ['ക', 'க', 'क', 'M', 'Ñ', 'μ']; // ക க क M Ñ μ (Greek mu)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let timer: number | null = null;
+    let i = 0;
+
+    const start = () => {
+      if (reduce || timer !== null) return;
+      text.textContent = glyphs[i % glyphs.length];
+      timer = window.setInterval(() => {
+        i += 1;
+        text.textContent = glyphs[i % glyphs.length];
+      }, 150);
+    };
+    const stop = () => {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+      i = 0;
+      text.textContent = original;
+    };
+
+    link.addEventListener('mouseenter', start);
+    link.addEventListener('mouseleave', stop);
+    link.addEventListener('focus', start);
+    link.addEventListener('blur', stop);
+  }
+</script>
