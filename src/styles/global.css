@@ -18,8 +18,8 @@
   --border-hover:  #2a2e48;
   --fg:            #d7dbe8;
   --fg-dim:        #828aa3;
-  --accent:        #4ade80; /* terminal / compute green */
-  --accent-dim:    #2b5e41;
+  --accent:        #a78bfa; /* violet — dark-mode accent */
+  --accent-dim:    #4c3a7a;
 
   --nav-h: 3.25rem;
 
@@ -145,7 +145,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
   inset: 0;
   background:
     radial-gradient(120% 85% at 50% -10%, rgba(110, 168, 254, 0.12), transparent 60%),
-    radial-gradient(90% 90% at 78% 25%, rgba(74, 222, 128, 0.06), transparent 55%),
+    radial-gradient(90% 90% at 78% 25%, rgba(167, 139, 250, 0.06), transparent 55%),
     linear-gradient(180deg, #04050a 0%, var(--bg) 72%);
 }
 [data-theme="light"] .site-gradient {
@@ -210,36 +210,6 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 }
 .hero-tagline a:hover {
   text-decoration-color: var(--accent);
-}
-
-/* ===========================================================================
-   Hero headshot — circular photo right of the name block on desktop.
-=========================================================================== */
-.hero-headshot-wrap {
-  flex-shrink: 0;
-}
-.hero-headshot {
-  display: block;
-  width: clamp(7rem, 14vw, 11rem);
-  height: clamp(7rem, 14vw, 11rem);
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center top;
-  border: 2px solid var(--accent);
-  box-shadow:
-    0 0 0 4px rgba(74, 222, 128, 0.12),
-    0 8px 32px rgba(0, 0, 0, 0.55);
-  filter: grayscale(18%);
-  transition: filter 0.3s ease, box-shadow 0.3s ease;
-}
-.hero-headshot:hover {
-  filter: grayscale(0%);
-  box-shadow:
-    0 0 0 4px rgba(74, 222, 128, 0.28),
-    0 12px 40px rgba(0, 0, 0, 0.65);
-}
-@media (max-width: 400px) {
-  .hero-headshot-wrap { display: none; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -323,9 +293,12 @@ html.js #term-intro.term-intro-gone          { display: none; }
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.04em;
-  color: #28c840; /* macOS terminal green — always dark regardless of theme */
+  color: #28c840; /* macOS terminal green — light mode */
   user-select: none;
   transition: transform 0.13s ease, box-shadow 0.15s ease;
+}
+[data-theme="dark"] .term-icon-graphic {
+  color: #a78bfa; /* purple accent in dark mode */
 }
 .term-reopen-btn:hover .term-icon-graphic {
   transform: scale(1.08) translateY(-4px);
