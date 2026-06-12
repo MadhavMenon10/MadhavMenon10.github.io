@@ -38,7 +38,7 @@ export interface Site {
 export const site: Site = {
   // Identity is prefilled from the repo owner; everything else is TODO.
   name: 'Madhav Anand Menon',
-  role: 'Computer Science & Physics + Minor in Mathematics @ UIUC',
+  role: 'Computer Science & Physics + Mathematics @ UIUC',
   tagline: 'Currently interning @ <a href="https://www.valeo.com/en/" target="_blank" rel="noopener noreferrer">Valeo</a>',
   bio: 'Hi, I\'m Madhav! I am currently an incoming junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore. Now, I live in the US. I speak five languages (to varying levels of fluency). I am currently interning at Valeo.',
   email: 'madhavanandmenon@gmail.com',
