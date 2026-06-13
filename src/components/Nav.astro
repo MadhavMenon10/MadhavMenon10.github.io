@@ -64,7 +64,7 @@ const navHref = (href: string) => isHome ? href : '/' + href;
       timer = window.setInterval(() => {
         i += 1;
         glyph.textContent = glyphs[i % glyphs.length];
-      }, 250);
+      }, 200);
     };
     const stop = () => {
       if (timer !== null) {
