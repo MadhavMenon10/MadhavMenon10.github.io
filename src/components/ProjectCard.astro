@@ -6,7 +6,8 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, description, tags, github, link, image, imageAlt, imageFit } = project.data;
+const { title, description, tags, github, link, linkLabel, image, imageAlt, imageFit } =
+  project.data;
 ---
 
 <!--
@@ -74,7 +75,7 @@ const { title, description, tags, github, link, image, imageAlt, imageFit } = pr
               rel="noopener noreferrer"
               class="relative z-10 font-mono text-[0.7rem] text-fg-dim transition-colors hover:text-accent"
             >
-              Demo &#8599;
+              {linkLabel} &#8599;
             </a>
           )
         }

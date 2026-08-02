@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, description, tags, github, link } = project.data;
+const { title, description, tags, github, link, linkLabel } = project.data;
 ---
 
 <Base title={`${title} · ${site.name}`} description={description}>
@@ -59,7 +59,7 @@ const { title, description, tags, github, link } = project.data;
             rel="noopener noreferrer"
             class="font-mono text-[0.7rem] text-fg-dim transition-colors hover:text-accent"
           >
-            Demo &#8599;
+            {linkLabel} &#8599;
           </a>
         )
       }

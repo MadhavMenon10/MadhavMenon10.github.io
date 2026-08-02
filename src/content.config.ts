@@ -29,8 +29,11 @@ const projects = defineCollection({
     tags: z.array(z.string()).default([]),
     /** Repo URL — shows the GitHub icon on the card. */
     github: z.string().url().optional(),
-    /** Optional demo / paper link. */
+    /** Optional demo / paper / store link. */
     link: z.string().url().optional(),
+    /** Label for `link`. Defaults to "Demo"; override for anything that isn't
+        one, e.g. "Chrome Web Store" or "Paper". */
+    linkLabel: z.string().default('Demo'),
     /** Optional preview image shown on the card — a path served from /public. */
     image: z.string().optional(),
     /** Alt text for the preview image (defaults to the title). */

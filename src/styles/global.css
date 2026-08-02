@@ -170,6 +170,10 @@ body {
   transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 .prose a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+/* Tailwind's preflight strips list markers, so restore them explicitly —
+   otherwise the ::marker colour below has nothing to apply to. */
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
 .prose ul, .prose ol { margin: 0 0 1.15rem; padding-left: 1.25rem; }
 .prose li { margin: 0.3rem 0; }
 .prose li::marker { color: var(--fg-dim); }
