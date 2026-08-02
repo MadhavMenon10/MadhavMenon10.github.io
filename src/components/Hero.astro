@@ -1,23 +1,30 @@
 ---
 import { site } from '../data/site';
+import AsciiGpu from './AsciiGpu.astro';
 ---
 
-<section
-  id="top"
-  class="relative flex min-h-[100svh] items-center"
->
-  <div class="mx-auto flex w-full max-w-3xl items-center justify-between gap-10 px-4 sm:px-6">
-    <!-- Text block -->
-    <div class="flex-1">
-      <p class="mb-4 font-mono text-xs text-accent sm:text-sm">{site.role}</p>
+<section id="top">
+  <h1 class="text-2xl font-semibold tracking-[-0.02em] text-fg sm:text-[1.75rem]">
+    {site.name}
+  </h1>
 
-      <h1
-        class="font-mono text-4xl font-bold leading-[1.05] tracking-tight text-fg sm:text-6xl"
-      >
-        {site.name}
-      </h1>
+  <p class="mt-2 text-sm text-fg-dim">{site.role}</p>
+  <p class="hero-tagline mt-1 text-sm text-fg-dim" set:html={site.tagline} />
 
-      <p class="hero-tagline mt-5 max-w-xl font-mono text-sm text-fg-dim sm:text-base" set:html={site.tagline} />
-    </div>
-  </div>
+  <AsciiGpu />
 </section>
+
+<style>
+  .hero-tagline :global(a) {
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-strong);
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+  .hero-tagline :global(a:hover) {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+</style>

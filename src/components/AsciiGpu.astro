@@ -1,0 +1,47 @@
+---
+/*
+  ASCII drawing of an accelerator board: a GPU package flanked by four HBM
+  stacks, sitting on a PCB with an 8-pin power header, an NVLink edge and a
+  PCIe Gen5 x16 connector.
+
+  It's plain text in a <pre>, so it costs nothing to load, stays sharp at any
+  zoom, and picks up both themes for free. The drawing is exactly 69 columns
+  wide — keep it that way when editing or the borders stop lining up.
+*/
+
+const art = [
+  '    _________________________________________________________________',
+  '   /                                                                |',
+  '  |   o=o=o=o=o=+                                [ NVLINK ]         |',
+  '  |   +--------+   +--------------------------------+   +--------+  |',
+  '  |   |  HBM   |   |  [SM][SM][SM][SM][SM][SM][SM]  |   |  HBM   |  |',
+  '  |   |   3e   |   |  [SM][SM][SM][SM][SM][SM][SM]  |   |   3e   |  |',
+  '  |   |========|   |=========== L2 CACHE ===========|   |========|  |',
+  '  |   |  HBM   |   |  [SM][SM][SM][SM][SM][SM][SM]  |   |  HBM   |  |',
+  '  |   |   3e   |   |  [SM][SM][SM][SM][SM][SM][SM]  |   |   3e   |  |',
+  '  |   +--------+   +--------------------------------+   +--------+  |',
+  '  |                                                                 |',
+  '  |_________________________________________________________________|',
+  '        ||||||||||||||||||||  ||||||||||||||||||||||||||||||',
+].join('\n');
+
+// Tint the parts worth reading — the chassis stays dim. Spans don't affect
+// monospace alignment, so the grid survives. The source has no HTML-special
+// characters, so nothing needs escaping before set:html.
+const painted = art
+  .replaceAll('[SM]', '<span class="a-sm">[SM]</span>')
+  .replaceAll('HBM', '<span class="a-hbm">HBM</span>')
+  .replaceAll('3e', '<span class="a-hbm">3e</span>')
+  .replace(
+    /={11} L2 CACHE ={11}/,
+    (m) => `<span class="a-l2">${m}</span>`
+  );
+---
+
+<figure class="mt-10 sm:mt-14">
+  <pre class="ascii" role="img" aria-label={
+    'ASCII drawing of a GPU accelerator board: a die of streaming ' +
+    'multiprocessors around an L2 cache, flanked by four HBM3e stacks, on a ' +
+    'PCB with power, NVLink and PCIe connectors.'
+  } set:html={painted} />
+</figure>

@@ -1,0 +1,60 @@
+---
+/*
+  ASCII drawing of a particle in an infinite square well: the first three
+  energy eigenstates, each sine plotted at nine sub-levels per column so the
+  curves read smoothly at three rows apiece.
+
+  Same deal as AsciiGpu — plain text in a <pre>, no assets, both themes for
+  free. Fixed at 65 columns; keep it that way or the walls stop lining up.
+  The wave rows are painted by column index, so the wall positions below must
+  match the drawing.
+*/
+
+const WALL_L = 8;
+const WALL_R = 58;
+const WAVE_ROWS = new Set([1, 2, 3, 5, 6, 7, 9, 10, 11]);
+
+const art = [
+  '  V=oo  |                                                 |  V=oo',
+  "        |  ..--'''''--..                   ..--'''''--..  |      ",
+  "        |-'             '-.             .-'             '-|  n=3 ",
+  "        |                  ''--.....--''                  |      ",
+  '        |                                                 |      ',
+  "        |   ...---'''''''---...                           |      ",
+  "        |-''                   ''-..                   ..-|  n=2 ",
+  "        |                           '''---.......---'''   |      ",
+  '        |                                                 |      ',
+  "        |      .....------'''''''''''''''------.....      |      ",
+  "        |--''''                                     ''''--|  n=1 ",
+  '        |                                                 |      ',
+  '        +-------------------------------------------------+      ',
+  '        0                                                 L      ',
+  '                                                                 ',
+  '        H|ψ⟩ = E|ψ⟩          ⟨ψ|ψ⟩ = 1                            ',
+];
+
+// Tint the wavefunctions and the eigenvalue equation; the well itself stays
+// dim. Spans don't affect monospace alignment. No HTML-special characters in
+// the source, so nothing needs escaping before set:html.
+const painted = art
+  .map((line, i) => {
+    if (i === art.length - 1) return `<span class="a-l2">${line}</span>`;
+    if (!WAVE_ROWS.has(i)) return line;
+    return (
+      line.slice(0, WALL_L + 1) +
+      `<span class="a-l2">${line.slice(WALL_L + 1, WALL_R)}</span>` +
+      line.slice(WALL_R)
+    );
+  })
+  .join('\n')
+  .replace(/n=[123]/g, (m) => `<span class="a-sm">${m}</span>`)
+  .replace(/V=oo/g, (m) => `<span class="a-sm">${m}</span>`);
+---
+
+<figure class="mb-12">
+  <pre class="ascii" role="img" aria-label={
+    'ASCII drawing of a particle in an infinite square well: the first three ' +
+    'energy eigenstates drawn as standing waves between two infinite ' +
+    'potential walls, with the eigenvalue equation below.'
+  } set:html={painted} />
+</figure>

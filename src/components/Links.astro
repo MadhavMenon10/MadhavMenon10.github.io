@@ -1,27 +1,23 @@
 ---
+import Section from './Section.astro';
 import { site } from '../data/site';
 ---
 
-<section id="links" class="reveal border-t border-border/60 py-9" data-reveal>
-  <h2 class="mb-6 font-mono text-sm text-accent">
-    <span class="text-fg-dim">~/</span>Links
-  </h2>
-
-  <ul class="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
+<Section id="links" title="Links">
+  <ul class="flex flex-wrap gap-x-6 gap-y-1.5 text-sm">
     {
       site.links.map((link) => (
         <li>
           <a
             href={link.href}
-            class="group text-fg-dim transition-colors hover:text-accent"
+            class="link"
             target={link.external ? '_blank' : undefined}
             rel={link.external ? 'noopener noreferrer' : undefined}
           >
-            <span class="text-accent-dim transition-colors group-hover:text-accent">/ </span>
             {link.label}
           </a>
         </li>
       ))
     }
   </ul>
-</section>
+</Section>

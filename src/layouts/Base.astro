@@ -13,7 +13,9 @@ interface Props {
 
 const {
   title = site.name,
-  description = 'TODO: site description for search engines and social cards.',
+  description =
+    'Madhav Anand Menon — Computer Science & Physics + Mathematics at UIUC. ' +
+    'GPU programming, high performance computing, and scientific computing.',
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
@@ -30,22 +32,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
 
-    <!-- Open Graph / social (TODO: add /og.png and reference it here) -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
 
     <!--
       Theme bootstrap. Runs BEFORE first paint to avoid a flash of the wrong
-      theme, and adds `.js` so JS-only enhancements (reveal animations) don't
-      hide content when JavaScript is disabled.
-      Precedence: saved choice > system preference > dark default.
+      theme. Precedence: saved choice > system preference > dark default.
     -->
     <script is:inline>
       (function () {
-        document.documentElement.classList.add('js');
         try {
           var t = localStorage.getItem('theme');
           if (t !== 'dark' && t !== 'light') {
@@ -60,26 +58,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       })();
     </script>
   </head>
-  <body>
-    <!-- Full-page background: WebGL grid over a CSS deep-space gradient.
-         Fixed and behind everything; the gradient is the no-JS fallback. -->
-    <div class="site-bg" aria-hidden="true">
-      <div class="site-gradient"></div>
-      <canvas id="grid-canvas"></canvas>
-    </div>
-
+  <body class="bg-bg text-fg">
     <a class="skip-link" href="#main">Skip to content</a>
     <Nav />
-    <main id="main">
+    <main id="main" class="mx-auto w-full max-w-2xl px-5 pb-24 pt-16 sm:px-6 sm:pt-24">
       <slot />
     </main>
     <Footer />
-
-    <script>
-      import { initHero } from '../scripts/hero';
-      import { initReveal } from '../scripts/reveal';
-      initHero();
-      initReveal();
-    </script>
   </body>
 </html>

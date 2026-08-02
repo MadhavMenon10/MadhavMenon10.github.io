@@ -2,8 +2,8 @@
    site.ts — site-wide content and config.
 
    Projects and writing posts are Markdown collections (src/content/projects/
-   and src/content/writing/). Everything else — name, tagline, bio, links, and
-   the GPU-diagram map — lives here. Items marked TODO are placeholders.
+   and src/content/writing/). Everything else — name, role, tagline, bio, links,
+   and course notes — lives here.
 =========================================================================== */
 
 export interface NavItem {
@@ -19,11 +19,6 @@ export interface LinkItem {
   /** When true, opens in a new tab with rel="noopener noreferrer". */
   external?: boolean;
 }
-
-/** GPU core type a project "runs on" — drives the interactive SM-diagram filter.
-    int = systems/low-level · fp32 = ML/data · fp64 = science · tensor = AI/DL.
-    Set per project in its frontmatter (src/content/projects/*.md). */
-export type CoreUnit = 'int' | 'fp32' | 'fp64' | 'tensor';
 
 export interface Site {
   name: string;
@@ -52,10 +47,9 @@ export const site: Site = {
     { label: 'Notes', href: '#notes' },
   ],
 
-  // Prominent links row. Replace '#TODO' with real URLs.
-  // resume.pdf lives in /public (relocated from your old assets).
+  // Prominent links row. The resume PDF is served from /public.
   links: [
-    { label: 'Resume', href: '/resume.pdf', external: true },
+    { label: 'Resume', href: '/Madhav_Anand_Menon_Resume.pdf', external: true },
     { label: 'Email', href: 'mailto:madhavanandmenon@gmail.com' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhav-anand-menon/', external: true },
     { label: 'GitHub', href: 'https://github.com/MadhavMenon10', external: true },
@@ -88,33 +82,3 @@ export const notes: CourseNote[] = [
   { code: 'MATH 241',  title: 'Calculus III',                    term: 'Spring', year: 2025, pdf: '/notes/MATH_241_Calculus_III.pdf' },
 ];
 
-/* ===========================================================================
-   Interactive SM-diagram map (GpuDiagram.astro + gpu-map.ts).
-   Each GPU unit maps to a destination. Edit freely:
-     - kind 'filter'  -> filters the project grid to `target` (a CoreUnit)
-     - kind 'section' -> smooth-scrolls to the `target` anchor
-     - kind 'mailto'  -> opens an email to `target`
-   `cmd` is the terminal command echoed in the readout on hover/click.
-=========================================================================== */
-export interface GpuUnitDef {
-  /** Matches data-unit in the diagram. */
-  id: string;
-  label: string;
-  desc: string;
-  cmd: string;
-  kind: 'filter' | 'section' | 'mailto';
-  target: string;
-}
-
-export const gpu: { units: GpuUnitDef[] } = {
-  units: [
-    { id: 'l1',     label: '~/about',   desc: 'my background · who I am',              cmd: 'cat ~/about',         kind: 'section', target: '#about' },
-    { id: 'int',    label: 'systems',   desc: 'low-level · OS · compilers · C/C++',   cmd: 'ls ~/projects --sys', kind: 'filter',  target: 'int' },
-    { id: 'fp32',   label: 'ml & data', desc: 'machine learning · data science',       cmd: 'ls ~/projects --ml',  kind: 'filter',  target: 'fp32' },
-    { id: 'fp64',   label: 'science',   desc: 'physics · cosmology · simulation',      cmd: 'ls ~/projects --sci', kind: 'filter',  target: 'fp64' },
-    { id: 'tensor', label: 'ai & dl',   desc: 'deep learning · neural nets · LLMs',   cmd: 'ls ~/projects --ai',  kind: 'filter',  target: 'tensor' },
-    { id: 'ldst',   label: '~/links',   desc: 'load / store · find me elsewhere',      cmd: 'open ~/links',        kind: 'section', target: '#links' },
-    { id: 'sfu',    label: '~/write',   desc: 'special function · blog & essays',      cmd: 'cat ~/writing',       kind: 'section', target: '#writing' },
-    { id: 'tma',    label: 'contact',   desc: 'high-bandwidth async comms · email me', cmd: 'mail madhav',         kind: 'mailto',  target: 'madhav4@illinois.edu' },
-  ],
-};

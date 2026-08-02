@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import Section from './Section.astro';
 import ProjectCard from './ProjectCard.astro';
 
 const projects = (
@@ -9,12 +10,8 @@ const projects = (
 ).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
 ---
 
-<section id="projects" class="reveal border-t border-border/60 py-9" data-reveal>
-  <h2 class="mb-8 font-mono text-sm text-accent">
-    <span class="text-fg-dim">~/</span>Projects
-  </h2>
-
-  <div class="grid gap-4 sm:grid-cols-2">
+<Section id="projects" title="Projects">
+  <ul class="flex flex-col">
     {projects.map((project) => <ProjectCard project={project} />)}
-  </div>
-</section>
+  </ul>
+</Section>

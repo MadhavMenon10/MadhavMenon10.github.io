@@ -38,8 +38,6 @@ const projects = defineCollection({
     /** How the preview image fills its frame: 'cover' crops to fill, 'contain'
         shows the whole image (letterboxed). Defaults to 'cover'. */
     imageFit: z.enum(['cover', 'contain']).default('cover'),
-    /** GPU core type(s), for the interactive SM-diagram filter. */
-    units: z.array(z.enum(['int', 'fp32', 'fp64', 'tensor'])).optional(),
     /** Lower numbers sort first. */
     order: z.number().default(0),
     draft: z.boolean().default(false),

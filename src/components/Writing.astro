@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import Section from './Section.astro';
 
 // Hide drafts in production; show everything during local dev.
 const posts = (
@@ -8,47 +9,50 @@ const posts = (
   )
 ).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 ---
 
-<section id="writing" class="reveal border-t border-border/60 py-9" data-reveal>
-  <h2 class="mb-8 font-mono text-sm text-accent">
-    <span class="text-fg-dim">~/</span>Writing
-  </h2>
-
+<Section id="writing" title="Writing">
   {
     posts.length === 0 ? (
-      <p class="font-mono text-sm text-fg-dim">
-        // TODO: no posts yet — add Markdown files in src/content/writing/
-      </p>
+      <p class="text-sm text-fg-dim">Nothing published yet.</p>
     ) : (
-      <ul class="flex flex-col gap-7">
+      <ul class="flex flex-col">
         {posts.map((post) => {
           // A post links to its own generated page, unless `link` points it
           // off-site (e.g. a post hosted elsewhere).
           const href = post.data.link ?? `/writing/${post.id}`;
           const external = Boolean(post.data.link);
           return (
-            <li class="relative border-l-2 border-border pl-5 transition-colors hover:border-accent">
-              <p class="mb-1 font-mono text-xs text-fg-dim">
-                <time datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
-              </p>
-              <h3 class="mb-1 font-mono text-sm font-semibold text-fg">
-                <a
-                  href={href}
-                  target={external ? '_blank' : undefined}
-                  rel={external ? 'noopener noreferrer' : undefined}
-                  class="transition-colors hover:text-accent after:absolute after:inset-0 after:content-['']"
+            <li class="group relative border-b border-border py-5 first:pt-0 last:border-b-0 last:pb-0">
+              <div class="flex flex-col gap-x-6 gap-y-1 sm:flex-row sm:items-baseline">
+                <time
+                  datetime={post.data.date.toISOString()}
+                  class="shrink-0 font-mono text-[0.7rem] tracking-wide text-fg-dim sm:w-28"
                 >
-                  {post.data.title}
-                  {external && <span aria-hidden="true"> &#8599;</span>}
-                </a>
-              </h3>
-              <p class="text-sm leading-relaxed text-fg-dim">{post.data.blurb}</p>
+                  {fmt(post.data.date)}
+                </time>
+
+                <div class="min-w-0">
+                  <h3 class="text-[0.95rem] font-medium leading-snug text-fg">
+                    <a
+                      href={href}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener noreferrer' : undefined}
+                      class="transition-colors after:absolute after:inset-0 after:content-[''] group-hover:text-accent"
+                    >
+                      {post.data.title}
+                      {external && <span aria-hidden="true"> &#8599;</span>}
+                    </a>
+                  </h3>
+                  <p class="mt-1 text-sm text-fg-dim">{post.data.blurb}</p>
+                </div>
+              </div>
             </li>
           );
         })}
       </ul>
     )
   }
-</section>
+</Section>

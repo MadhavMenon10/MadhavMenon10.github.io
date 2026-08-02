@@ -1,0 +1,17 @@
+---
+/*
+  One page section: a hairline rule, a small mono label, then the content.
+  Every section on the home page uses this so the vertical rhythm stays
+  identical throughout.
+*/
+interface Props {
+  id: string;
+  title: string;
+}
+const { id, title } = Astro.props;
+---
+
+<section id={id} class="mt-14 border-t border-border pt-8 sm:mt-20 sm:pt-9">
+  <h2 class="label mb-6">{title}</h2>
+  <slot />
+</section>
