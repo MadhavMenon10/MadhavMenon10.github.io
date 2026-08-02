@@ -118,8 +118,8 @@ export const site: Site = {
   nav: [
     { label: 'About', href: '#about' },
     ...(experience.length ? [{ label: 'Experience', href: '#experience' }] : []),
-    ...(awards.length ? [{ label: 'Awards', href: '#awards' }] : []),
     { label: 'Projects', href: '#projects' },
+    ...(awards.length ? [{ label: 'Awards', href: '#awards' }] : []),
     { label: 'Writing', href: '#writing' },
     { label: 'Notes', href: '#notes' },
   ],

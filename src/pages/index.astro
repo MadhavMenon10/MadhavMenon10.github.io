@@ -15,8 +15,8 @@ import { experience, awards } from '../data/site';
 const order = [
   'about',
   ...(experience.length ? ['experience'] : []),
-  ...(awards.length ? ['awards'] : []),
   'projects',
+  ...(awards.length ? ['awards'] : []),
   'writing',
   'notes',
 ];
@@ -29,8 +29,8 @@ const num = Object.fromEntries(
   <Hero />
   <About index={num.about} />
   {experience.length > 0 && <Experience index={num.experience} />}
-  {awards.length > 0 && <Awards index={num.awards} />}
   <Projects index={num.projects} />
+  {awards.length > 0 && <Awards index={num.awards} />}
   <Writing index={num.writing} />
   <Notes index={num.notes} />
 </Base>
