@@ -89,7 +89,7 @@ export const awards: AwardItem[] = [
   },
   {
     title: 'James Scholar Honours',
-    org: 'UIUC',
+    org: 'Grainger College of Engineering, UIUC',
     period: 'Jan 2025',
   },
 ];

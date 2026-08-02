@@ -19,7 +19,12 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
       id="nav-name"
       class="hidden shrink-0 font-mono text-[0.8rem] font-medium tracking-tight text-fg transition-colors hover:text-accent sm:block"
     >
-      <span id="nav-name-glyph" aria-hidden="true" class="inline-block w-[1.1ch]"></span>
+      <!-- Explicitly dim so the glyph stays grey while the name itself picks up
+           the accent colour on hover. -->
+      <span
+        id="nav-name-glyph"
+        aria-hidden="true"
+        class="inline-block w-[1.1ch] text-fg-dim"></span>
       {site.name}
     </a>
 
