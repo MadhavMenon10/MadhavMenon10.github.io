@@ -4,10 +4,9 @@ description: "A Chrome extension that turns any highlighted passage in a Claude 
 tags: ["JavaScript", "CSS", "HTML"]
 link: "https://chromewebstore.google.com/detail/sidequest/hgkkigjjnbjfbplckakbldnadnmepefm"
 linkLabel: "Chrome Web Store"
-# TODO: uncomment once public/projects/sidequest.png exists.
-# image: "/projects/sidequest.png"
-# imageAlt: "SideQuest extension icon"
-# imageFit: "contain"
+image: "/projects/sidequest.png"
+imageAlt: "SideQuest extension icon: a blue speech bubble reading SQ."
+imageFit: "contain"
 order: 1
 draft: false
 ---
