@@ -6,7 +6,7 @@ github: "https://github.com/MadhavMenon10/GPU-Visualiser"
 image: "/projects/gpu-visualiser.png"
 imageAlt: "GPU die diagram showing GPCs, streaming multiprocessors, L2 cache, and memory controllers"
 imageFit: "contain"
-order: 1
+order: 2
 draft: false
 ---
 
