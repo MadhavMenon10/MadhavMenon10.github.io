@@ -109,14 +109,14 @@ export const site: Site = {
   name: 'Madhav Anand Menon',
   role: 'Computer Science & Physics + Mathematics @ UIUC',
   tagline: 'Currently interning @ <a href="https://www.valeo.com/en/" target="_blank" rel="noopener noreferrer">Valeo</a>',
-  bio: 'Hi, I\'m Madhav! I am currently a rising junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore, and now live in the US. I speak five languages (hover over my name in the navbar to see which! Note that I do not formally know Greek, it is rather a homage to all the physics I have studied). I am currently interning at Valeo.',
+  bio: 'Hi, I\'m Madhav! I am currently a rising junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore, and now live in the US. I speak five languages (hover over my name above to see which! Note that I do not formally know Greek, it is rather a homage to all the physics I have studied). I am currently interning at Valeo.',
   email: 'madhavanandmenon@gmail.com',
 
   // Single-page anchor navigation. Experience and Awards drop out of the nav
   // while their lists are empty, so a link never points at a hidden section.
+  // There's no Links entry — `links` below renders in the hero instead.
   nav: [
     { label: 'About', href: '#about' },
-    { label: 'Links', href: '#links' },
     ...(experience.length ? [{ label: 'Experience', href: '#experience' }] : []),
     ...(awards.length ? [{ label: 'Awards', href: '#awards' }] : []),
     { label: 'Projects', href: '#projects' },
@@ -124,7 +124,8 @@ export const site: Site = {
     { label: 'Notes', href: '#notes' },
   ],
 
-  // Prominent links row. The resume PDF is served from /public.
+  // Rendered as the links row in the hero, above the fold. The resume PDF is
+  // served from /public.
   links: [
     { label: 'Resume', href: '/Madhav_Anand_Menon_Resume.pdf', external: true },
     { label: 'Email', href: 'mailto:madhavanandmenon@gmail.com' },

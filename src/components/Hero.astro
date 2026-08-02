@@ -4,12 +4,35 @@ import AsciiGpu from './AsciiGpu.astro';
 ---
 
 <section id="top">
-  <h1 class="text-2xl font-semibold tracking-[-0.02em] text-fg sm:text-[1.75rem]">
-    {site.name}
-  </h1>
+  <h1
+    id="hero-name"
+    class="text-2xl font-semibold tracking-[-0.02em] text-fg sm:text-[1.75rem]"
+  >{site.name}<span
+      id="hero-name-glyph"
+      aria-hidden="true"
+      class="ml-2 inline-block w-[1.1ch] font-mono text-fg-dim"></span></h1>
 
   <p class="mt-2 text-sm text-fg-dim">{site.role}</p>
   <p class="hero-tagline mt-1 text-sm text-fg-dim" set:html={site.tagline} />
+
+  <!-- Links live here rather than in a section of their own so they're
+       reachable without scrolling. -->
+  <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-1.5 text-sm">
+    {
+      site.links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="link"
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
 
   <AsciiGpu />
 </section>
@@ -28,3 +51,37 @@ import AsciiGpu from './AsciiGpu.astro';
     text-decoration-color: var(--accent);
   }
 </style>
+
+<script>
+  // Hovering the name cycles a single glyph beside it — the author's initial
+  // across the scripts he reads: Malayalam, Tamil, Devanagari, Latin, Spanish,
+  // Greek. The slot keeps its width whether or not a glyph is in it, so the
+  // heading never reflows. Skipped for reduced-motion users.
+  const name = document.getElementById('hero-name');
+  const glyph = document.getElementById('hero-name-glyph');
+
+  if (name && glyph) {
+    const glyphs = ['ക', 'க', 'क', 'M', 'Ñ', 'μ'];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let timer: number | null = null;
+    let i = 0;
+
+    name.addEventListener('mouseenter', () => {
+      if (reduce || timer !== null) return;
+      glyph.textContent = glyphs[i % glyphs.length];
+      timer = window.setInterval(() => {
+        i += 1;
+        glyph.textContent = glyphs[i % glyphs.length];
+      }, 220);
+    });
+
+    name.addEventListener('mouseleave', () => {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+      i = 0;
+      glyph.textContent = '';
+    });
+  }
+</script>

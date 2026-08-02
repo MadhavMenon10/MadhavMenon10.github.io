@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
-import Links from '../components/Links.astro';
 import Experience from '../components/Experience.astro';
 import Awards from '../components/Awards.astro';
 import Projects from '../components/Projects.astro';
@@ -15,7 +14,6 @@ import { experience, awards } from '../data/site';
 // renumber themselves rather than leaving a hole in the sequence.
 const order = [
   'about',
-  'links',
   ...(experience.length ? ['experience'] : []),
   ...(awards.length ? ['awards'] : []),
   'projects',
@@ -30,7 +28,6 @@ const num = Object.fromEntries(
 <Base>
   <Hero />
   <About index={num.about} />
-  <Links index={num.links} />
   {experience.length > 0 && <Experience index={num.experience} />}
   {awards.length > 0 && <Awards index={num.awards} />}
   <Projects index={num.projects} />
