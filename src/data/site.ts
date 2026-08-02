@@ -38,25 +38,21 @@ export interface ExperienceItem {
   description?: string;
 }
 
+// Newest first, by start date.
 export const experience: ExperienceItem[] = [
-  {
-    // TODO: correct the title and dates, and write the description.
-    role: 'Intern',
-    org: 'Valeo',
-    period: 'Summer 2026',
-    description: '',
-  },
+  { role: 'Software Engineer Intern',       org: 'Valeo',         period: 'Jun — Aug 2026' },
+  { role: 'Software Engineer',              org: 'Disruption Lab', period: 'Feb 2026 — Present' },
+  { role: 'LLM Research Intern',            org: 'Algoverse.AI',  period: 'Sep 2025 — May 2026' },
+  { role: 'Software Engineer Intern',       org: 'DigiAlert',     period: 'Jun — Aug 2025' },
+  { role: 'CS 124 Honours Project Manager', org: 'UIUC',          period: 'Feb 2025 — Present' },
 ];
 
 /* ===========================================================================
    Awards and honours (Awards.astro).
 
-   Same shape as experience, minus the role/org split. The section hides itself
-   while this list is empty, so nothing half-finished ships. Add entries like:
-
-     { title: 'Dean's List', org: 'UIUC', period: 'Fall 2025' },
-     { title: 'Some Scholarship', org: 'Issuing body', period: '2024',
-       description: 'What it was awarded for.' },
+   Same shape as experience, minus the role/org split. An award held more than
+   once lists every occasion in `period` — the column wraps rather than
+   truncating. The section hides itself entirely while this list is empty.
 =========================================================================== */
 export interface AwardItem {
   /** Name of the award, scholarship, or honour. */
@@ -69,7 +65,34 @@ export interface AwardItem {
   description?: string;
 }
 
-export const awards: AwardItem[] = [];
+// Newest first, by most recent time awarded.
+export const awards: AwardItem[] = [
+  {
+    title: "Dean's List",
+    org: 'UIUC',
+    period: 'Fall 2024, Spring 2025, Spring 2026',
+  },
+  {
+    title: 'Grainger Engineering Merit Scholarships',
+    org: 'Grainger College of Engineering, UIUC',
+    period: 'May 2025, May 2026',
+  },
+  {
+    title: 'Ruth and Hayward Scholarship',
+    org: 'Tau Beta Pi',
+    period: 'May 2026',
+  },
+  {
+    title: 'Yee Seung Ng Award',
+    org: 'Department of Physics, UIUC',
+    period: 'Apr 2026',
+  },
+  {
+    title: 'James Scholar Honours',
+    org: 'UIUC',
+    period: 'Jan 2025',
+  },
+];
 
 export interface Site {
   name: string;
