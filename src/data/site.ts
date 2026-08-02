@@ -158,5 +158,6 @@ export const notes: CourseNote[] = [
   { code: 'MATH 416H', title: 'Honours Abstract Linear Algebra', term: 'Fall',   year: 2025, pdf: '/notes/MATH_416__Abstract_Linear_Algebra.pdf' },
   { code: 'MATH 441',  title: 'Differential Equations',          term: 'Fall',   year: 2025, pdf: '/notes/MATH_441__Differential_Equations.pdf' },
   { code: 'MATH 241',  title: 'Calculus III',                    term: 'Spring', year: 2025, pdf: '/notes/MATH_241_Calculus_III.pdf' },
+   {code: 'IB', title: 'International Baccalaureate', term: 'High School', year: 2022 - 2024, pdf: 'https://github.com/MadhavMenon10/my-ib-stuff'},
 ];
 
