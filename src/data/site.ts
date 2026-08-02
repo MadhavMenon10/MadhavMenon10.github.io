@@ -144,11 +144,16 @@ export interface CourseNote {
   code: string;
   /** Full course title, e.g. "Calculus III". */
   title: string;
-  /** Term taken — Spring sorts before Fall within a year. */
-  term: 'Spring' | 'Fall';
-  /** Calendar year taken. */
-  year: number;
-  /** Path to the notes PDF served from /public, or omit if not uploaded yet. */
+  /** Term or stage taken. 'Spring' sorts before 'Fall' within a year; any
+      other label sorts alongside 'Fall'. */
+  term: string;
+  /** Year taken, shown after the term. A number for a single year, or a
+      quoted range for something spanning several. Quote the range — an
+      unquoted `2022 - 2024` is subtraction, and evaluates to -2. Sorting uses
+      the latest year found in it. */
+  year: number | string;
+  /** Link to the notes — a PDF path served from /public, or any external URL.
+      Omit if nothing is uploaded yet. */
   pdf?: string;
 }
 
@@ -158,6 +163,6 @@ export const notes: CourseNote[] = [
   { code: 'MATH 416H', title: 'Honours Abstract Linear Algebra', term: 'Fall',   year: 2025, pdf: '/notes/MATH_416__Abstract_Linear_Algebra.pdf' },
   { code: 'MATH 441',  title: 'Differential Equations',          term: 'Fall',   year: 2025, pdf: '/notes/MATH_441__Differential_Equations.pdf' },
   { code: 'MATH 241',  title: 'Calculus III',                    term: 'Spring', year: 2025, pdf: '/notes/MATH_241_Calculus_III.pdf' },
-   {code: 'IB', title: 'International Baccalaureate', term: 'High School', year: 2022 - 2024, pdf: 'https://github.com/MadhavMenon10/my-ib-stuff'},
+  { code: 'IB',        title: 'International Baccalaureate',     term: 'High School', year: '2022-2024', pdf: 'https://github.com/MadhavMenon10/my-ib-stuff' },
 ];
 

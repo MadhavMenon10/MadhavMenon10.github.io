@@ -5,8 +5,11 @@ import { notes } from '../data/site';
 
 // Latest semester first (Spring sorts before Fall within a year), then by
 // course code alphabetically — e.g. MATH before PHYS in the same semester.
+// A year given as a range sorts by the year it finished.
 const termRank = (t: string) => (t === 'Spring' ? 1 : 2);
-const sortKey = (n: (typeof notes)[number]) => n.year * 10 + termRank(n.term);
+const endYear = (y: number | string) =>
+  typeof y === 'number' ? y : Math.max(...(y.match(/\d{4}/g) ?? ['0']).map(Number));
+const sortKey = (n: (typeof notes)[number]) => endYear(n.year) * 10 + termRank(n.term);
 const sorted = [...notes].sort(
   (a, b) => sortKey(b) - sortKey(a) || a.code.localeCompare(b.code)
 );
@@ -41,7 +44,7 @@ const { index } = Astro.props;
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-fg transition-colors after:absolute after:inset-0 after:content-[''] group-hover:text-accent"
-                aria-label={`Open ${n.code} ${n.title} notes (PDF) in a new tab`}
+                aria-label={`Open ${n.code} ${n.title} notes in a new tab`}
               >
                 {n.title}
                 <span aria-hidden="true"> &#8599;</span>
