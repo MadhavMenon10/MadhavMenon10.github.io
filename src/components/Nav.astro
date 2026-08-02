@@ -8,16 +8,21 @@ const isHome = Astro.url.pathname === '/';
 const navHref = (href: string) => (isHome ? href : '/' + href);
 ---
 
-<!--
-  No name in the bar: the hero already carries it as the page heading, and
-  repeating it here just doubled it up. Links sit at the left edge and the
-  toggle at the right, both aligned with the content column below.
--->
 <header class="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-sm">
   <nav
     aria-label="Primary"
     class="mx-auto flex h-[var(--nav-h)] max-w-2xl items-center justify-between gap-3 px-5 sm:px-6"
   >
+    <!-- Hidden on phones, where the link row needs the width. -->
+    <a
+      href={isHome ? '#top' : '/'}
+      id="nav-name"
+      class="hidden shrink-0 font-mono text-[0.8rem] font-medium tracking-tight text-fg transition-colors hover:text-accent sm:block"
+    >
+      <span id="nav-name-glyph" aria-hidden="true" class="inline-block w-[1.1ch]"></span>
+      {site.name}
+    </a>
+
     <ul class="nav-scroll flex min-w-0 items-center overflow-x-auto">
       {
         site.nav.map((item) => (
@@ -36,3 +41,42 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
     <ThemeToggle />
   </nav>
 </header>
+
+<script>
+  // Hovering the name cycles a single glyph beside it — the author's initial
+  // across the scripts he reads: Malayalam, Tamil, Devanagari, Latin, Spanish,
+  // Greek. The slot keeps its width whether or not a glyph is in it, so the
+  // name never shifts. Skipped for reduced-motion users.
+  const link = document.getElementById('nav-name');
+  const glyph = document.getElementById('nav-name-glyph');
+
+  if (link && glyph) {
+    const glyphs = ['ക', 'க', 'क', 'M', 'Ñ', 'μ'];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let timer: number | null = null;
+    let i = 0;
+
+    const start = () => {
+      if (reduce || timer !== null) return;
+      glyph.textContent = glyphs[i % glyphs.length];
+      timer = window.setInterval(() => {
+        i += 1;
+        glyph.textContent = glyphs[i % glyphs.length];
+      }, 220);
+    };
+
+    const stop = () => {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+      i = 0;
+      glyph.textContent = '';
+    };
+
+    link.addEventListener('mouseenter', start);
+    link.addEventListener('mouseleave', stop);
+    link.addEventListener('focus', start);
+    link.addEventListener('blur', stop);
+  }
+</script>
