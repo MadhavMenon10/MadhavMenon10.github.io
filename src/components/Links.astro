@@ -1,9 +1,14 @@
 ---
 import Section from './Section.astro';
 import { site } from '../data/site';
+
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
 ---
 
-<Section id="links" title="Links">
+<Section id="links" title="Links" index={index}>
   <ul class="flex flex-wrap gap-x-6 gap-y-1.5 text-sm">
     {
       site.links.map((link) => (

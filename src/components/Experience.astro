@@ -1,0 +1,36 @@
+---
+import Section from './Section.astro';
+import { experience } from '../data/site';
+
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
+---
+
+<Section id="experience" title="Experience" index={index}>
+  <ul class="flex flex-col">
+    {
+      experience.map((item) => (
+        <li class="border-b border-border py-6 first:pt-0 last:border-b-0 last:pb-0">
+          <div class="flex flex-col gap-x-6 gap-y-2 sm:flex-row">
+            <p class="shrink-0 font-mono text-[0.7rem] uppercase tracking-wide text-fg-dim sm:w-40 sm:pt-1">
+              {item.period}
+            </p>
+
+            <div class="min-w-0">
+              <h3 class="font-mono text-[0.95rem] font-bold leading-snug text-fg">
+                {item.role}
+              </h3>
+              <p class="mt-1.5 font-mono text-sm text-fg-dim">{item.org}</p>
+
+              {item.description && (
+                <p class="mt-3 text-sm text-fg-dim">{item.description}</p>
+              )}
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

@@ -1,17 +1,29 @@
 ---
 /*
-  One page section: a hairline rule, a small mono label, then the content.
-  Every section on the home page uses this so the vertical rhythm stays
-  identical throughout.
+  One page section: a numbered mono heading, a hairline rule, then the content.
+  Every section on the home page uses this so the vertical rhythm and the
+  numbering stay consistent. The number is passed in rather than counted here —
+  index.astro owns the ordering, so sections that hide themselves (experience,
+  awards) don't leave a gap in the sequence.
 */
 interface Props {
   id: string;
   title: string;
+  /** Two-digit section number shown before the title, e.g. "03". */
+  index: string;
 }
-const { id, title } = Astro.props;
+const { id, title, index } = Astro.props;
 ---
 
-<section id={id} class="mt-14 border-t border-border pt-8 sm:mt-20 sm:pt-9">
-  <h2 class="label mb-6">{title}</h2>
-  <slot />
+<section id={id} class="mt-16 sm:mt-24">
+  <h2
+    class="border-b border-border pb-4 font-mono text-[0.9rem] font-bold uppercase tracking-[0.12em] text-fg"
+  >
+    <span class="font-medium text-fg-dim">{index}.</span>
+    {title}
+  </h2>
+
+  <div class="mt-7">
+    <slot />
+  </div>
 </section>

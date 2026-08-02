@@ -8,9 +8,14 @@ const projects = (
     import.meta.env.PROD ? !data.draft : true
   )
 ).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
+
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
 ---
 
-<Section id="projects" title="Projects">
+<Section id="projects" title="Projects" index={index}>
   <ul class="flex flex-col">
     {projects.map((project) => <ProjectCard project={project} />)}
   </ul>

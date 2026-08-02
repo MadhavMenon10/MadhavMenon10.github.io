@@ -24,14 +24,14 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
       Madhav Anand Menon
     </a>
 
-    <div class="flex flex-1 items-center justify-between gap-1 sm:flex-none sm:justify-end">
-      <ul class="flex items-center">
+    <div class="flex min-w-0 flex-1 items-center gap-1 sm:flex-none sm:justify-end">
+      <ul class="nav-scroll flex min-w-0 flex-1 items-center overflow-x-auto sm:flex-none">
         {
           site.nav.map((item) => (
             <li>
               <a
                 href={navHref(item.href)}
-                class="px-1.5 py-1 font-mono text-[0.7rem] text-fg-dim transition-colors hover:text-fg sm:px-2"
+                class="block whitespace-nowrap px-1.5 py-1 font-mono text-[0.7rem] text-fg-dim transition-colors hover:text-fg sm:px-2"
               >
                 {item.label}
               </a>

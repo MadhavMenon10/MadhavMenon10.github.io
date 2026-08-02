@@ -94,14 +94,14 @@ body {
    Shared primitives
 =========================================================================== */
 
-/* Small mono label used for section headings and metadata. */
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
+/* The nav link row scrolls sideways on narrow screens rather than wrapping or
+   overflowing the header; the scrollbar itself would be noise. */
+.nav-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nav-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* Inline prose links — underlined in hairline grey, accented on hover. */

@@ -1,8 +1,13 @@
 ---
 import Section from './Section.astro';
 import { site } from '../data/site';
+
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
 ---
 
-<Section id="about" title="About">
+<Section id="about" title="About" index={index}>
   <p class="text-fg">{site.bio}</p>
 </Section>

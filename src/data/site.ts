@@ -20,6 +20,57 @@ export interface LinkItem {
   external?: boolean;
 }
 
+/* ===========================================================================
+   Experience (Experience.astro).
+
+   One entry per role, newest first — the list renders in array order, so
+   reorder here to reorder the section. `description` is optional: leave it off
+   and the row shows just the role and organisation.
+=========================================================================== */
+export interface ExperienceItem {
+  /** Job title or role, e.g. "Software Engineering Intern". */
+  role: string;
+  /** Company, lab, or organisation. */
+  org: string;
+  /** Date range, shown verbatim in the left column, e.g. "May — Sep 2026". */
+  period: string;
+  /** Optional prose about the work. Omit for a role you'd rather just list. */
+  description?: string;
+}
+
+export const experience: ExperienceItem[] = [
+  {
+    // TODO: correct the title and dates, and write the description.
+    role: 'Intern',
+    org: 'Valeo',
+    period: 'Summer 2026',
+    description: '',
+  },
+];
+
+/* ===========================================================================
+   Awards and honours (Awards.astro).
+
+   Same shape as experience, minus the role/org split. The section hides itself
+   while this list is empty, so nothing half-finished ships. Add entries like:
+
+     { title: 'Dean's List', org: 'UIUC', period: 'Fall 2025' },
+     { title: 'Some Scholarship', org: 'Issuing body', period: '2024',
+       description: 'What it was awarded for.' },
+=========================================================================== */
+export interface AwardItem {
+  /** Name of the award, scholarship, or honour. */
+  title: string;
+  /** Who granted it. */
+  org: string;
+  /** Year or date range, shown verbatim in the left column. */
+  period: string;
+  /** Optional prose — what it recognised, how competitive it was, etc. */
+  description?: string;
+}
+
+export const awards: AwardItem[] = [];
+
 export interface Site {
   name: string;
   role: string;
@@ -38,10 +89,13 @@ export const site: Site = {
   bio: 'Hi, I\'m Madhav! I am currently a rising junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore, and now live in the US. I speak five languages (hover over my name in the navbar to see which! Note that I do not formally know Greek, it is rather a homage to all the physics I have studied). I am currently interning at Valeo.',
   email: 'madhavanandmenon@gmail.com',
 
-  // Single-page anchor navigation.
+  // Single-page anchor navigation. Experience and Awards drop out of the nav
+  // while their lists are empty, so a link never points at a hidden section.
   nav: [
     { label: 'About', href: '#about' },
     { label: 'Links', href: '#links' },
+    ...(experience.length ? [{ label: 'Experience', href: '#experience' }] : []),
+    ...(awards.length ? [{ label: 'Awards', href: '#awards' }] : []),
     { label: 'Projects', href: '#projects' },
     { label: 'Writing', href: '#writing' },
     { label: 'Notes', href: '#notes' },

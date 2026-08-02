@@ -10,9 +10,14 @@ const sortKey = (n: (typeof notes)[number]) => n.year * 10 + termRank(n.term);
 const sorted = [...notes].sort(
   (a, b) => sortKey(b) - sortKey(a) || a.code.localeCompare(b.code)
 );
+
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
 ---
 
-<Section id="notes" title="Notes">
+<Section id="notes" title="Notes" index={index}>
   <AsciiWell />
 
   <p class="text-sm text-fg-dim">
