@@ -94,13 +94,16 @@ body {
    Shared primitives
 =========================================================================== */
 
-/* The nav link row scrolls sideways on narrow screens rather than wrapping or
-   overflowing the header; the scrollbar itself would be noise. */
-.nav-scroll {
+/* Elements that scroll only as a fallback, where the scrollbar itself would be
+   noise: the nav link row on narrow screens, and the ASCII figures. Systems set
+   to always show scrollbars would otherwise draw one over content that fits. */
+.nav-scroll,
+.ascii {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.nav-scroll::-webkit-scrollbar {
+.nav-scroll::-webkit-scrollbar,
+.ascii::-webkit-scrollbar {
   display: none;
 }
 
@@ -127,7 +130,13 @@ body {
 =========================================================================== */
 .ascii {
   display: block;
+  /* The drawing always fits horizontally (the font size is derived from the
+     column count), so overflow-x is only a fallback for a substituted font.
+     overflow-y must be pinned to hidden: leaving it visible makes CSS promote
+     it to auto — because overflow-x isn't visible — and sub-pixel line-height
+     rounding then paints a vertical scrollbar the content doesn't need. */
   overflow-x: auto;
+  overflow-y: hidden;
   margin: 0;
   font-family: var(--font-mono);
   /* 69 columns at a 0.6em advance ≈ 41.4 × font-size wide, so 2vw keeps the
