@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
 import Experience from '../components/Experience.astro';
 import Awards from '../components/Awards.astro';
+import Courses from '../components/Courses.astro';
 import Projects from '../components/Projects.astro';
 import Writing from '../components/Writing.astro';
 import Notes from '../components/Notes.astro';
@@ -17,6 +18,7 @@ const order = [
   ...(experience.length ? ['experience'] : []),
   'projects',
   ...(awards.length ? ['awards'] : []),
+  'courses',
   'writing',
   'notes',
 ];
@@ -31,6 +33,7 @@ const num = Object.fromEntries(
   {experience.length > 0 && <Experience index={num.experience} />}
   <Projects index={num.projects} />
   {awards.length > 0 && <Awards index={num.awards} />}
+  <Courses index={num.courses} />
   <Writing index={num.writing} />
   <Notes index={num.notes} />
 </Base>

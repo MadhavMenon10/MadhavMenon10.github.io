@@ -92,6 +92,136 @@ export const awards: AwardItem[] = [
     org: 'Grainger College of Engineering, UIUC',
     period: 'Jan 2025',
   },
+  {
+    title: "Outstanding Cambridge Learner's Award",
+    org: 'Cambridge Assessment International Education',
+    period: 'Jan 2023',
+    description: 'Top in India for the Coordinated Science exam.',
+  },
+];
+
+/* ===========================================================================
+   Courses taken (Courses.astro).
+
+   Nested three deep: institution -> group -> course. A group is a semester at
+   university or a whole programme at school, so the same shape covers both.
+   Everything renders in array order — newest first — rather than being sorted,
+   because "Fall 2026" and "Cambridge IGCSE" have no common sort key.
+=========================================================================== */
+export interface CourseEntry {
+  /** Course code, e.g. "CS 374". Omit where the school doesn't use codes. */
+  code?: string;
+  /** Course title, e.g. "Intro to Algorithms and Models of Computation". */
+  title: string;
+}
+
+export interface CourseGroup {
+  /** Semester or programme, e.g. "Fall 2026" or "Cambridge IGCSE". */
+  label: string;
+  /** Optional aside under the label — a date range, "Upcoming", etc. */
+  note?: string;
+  courses: CourseEntry[];
+}
+
+export interface CourseInstitution {
+  /** School name, shown as the heading above its groups. */
+  name: string;
+  /** Optional date range for the whole institution, shown beside the name. */
+  detail?: string;
+  /** Newest group first. */
+  groups: CourseGroup[];
+}
+
+export const courses: CourseInstitution[] = [
+  {
+    name: 'UIUC',
+    detail: 'Fall 2024 — Present',
+    groups: [
+      {
+        label: 'Fall 2026',
+        note: 'Upcoming',
+        courses: [
+          { code: 'CS 374',   title: 'Intro to Algorithms and Models of Computation' },
+          { code: 'CS 411',   title: 'Databases' },
+          { code: 'CS 357',   title: 'Numerical Methods I' },
+          { code: 'PHYS 435', title: 'Electromagnetic Fields I' },
+          { code: 'MACS 100', title: 'Intro to Popular TV and Movies' },
+        ],
+      },
+      {
+        label: 'Spring 2026',
+        courses: [
+          { code: 'CS 233',   title: 'Computer Architecture' },
+          { code: 'CS 222',   title: 'Software Design Lab' },
+          { code: 'MATH 442', title: 'Intro to Partial Differential Equations' },
+          { code: 'MATH 461', title: 'Probability Theory' },
+          { code: 'PHYS 325', title: 'Classical Mechanics I' },
+          { code: 'PHYS 246', title: 'Intro to Computational Physics' },
+        ],
+      },
+      {
+        label: 'Fall 2025',
+        courses: [
+          { code: 'CS 225 H',   title: 'Honours Data Structures' },
+          { code: 'MATH 416 H', title: 'Honours Abstract Linear Algebra' },
+          { code: 'MATH 441',   title: 'Differential Equations' },
+          { code: 'PHYS 225',   title: 'Relativity and Math Methods' },
+          { code: 'PHYS 213',   title: 'University Physics: Thermodynamics' },
+          { code: 'PHYS 214',   title: 'University Physics: Quantum Physics' },
+        ],
+      },
+      {
+        label: 'Spring 2025',
+        courses: [
+          { code: 'CS 128',     title: 'Intro to Computer Science II (C++)' },
+          { code: 'MATH 314 H', title: 'Honours Intro to Higher Math' },
+          { code: 'MATH 241',   title: 'Calculus III' },
+          { code: 'PHYS 212',   title: 'University Physics: Electricity and Magnetism' },
+        ],
+      },
+      {
+        label: 'Fall 2024',
+        courses: [
+          { code: 'CS 124 H',   title: 'Honours Intro to Computer Science I (Kotlin)' },
+          { code: 'MATH 231 E', title: 'Engineering Calculus II' },
+          { code: 'PHYS 211',   title: 'University Physics: Mechanics' },
+          { code: 'LING 115',   title: 'Language and Culture in India' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'KC High International',
+    detail: 'Jul 2020 — May 2024',
+    groups: [
+      {
+        label: 'IB Diploma Programme',
+        note: 'Jul 2022 — May 2024',
+        courses: [
+          { title: 'Higher Level Physics' },
+          { title: 'Higher Level Mathematics' },
+          { title: 'Higher Level Chemistry' },
+          { title: 'Standard Level Economics' },
+          { title: 'Standard Level English Language and Literature' },
+          { title: 'Standard Level Spanish' },
+        ],
+      },
+      {
+        label: 'Cambridge IGCSE',
+        note: 'Jul 2020 — May 2022',
+        courses: [
+          { title: 'Computer Science' },
+          { title: 'Additional Mathematics' },
+          { title: 'International Mathematics' },
+          { title: 'Coordinated Science' },
+          { title: 'Economics' },
+          { title: 'Business Studies' },
+          { title: 'English — First Language' },
+          { title: 'Spanish — Foreign Language' },
+        ],
+      },
+    ],
+  },
 ];
 
 export interface Site {
@@ -120,6 +250,7 @@ export const site: Site = {
     ...(experience.length ? [{ label: 'Experience', href: '#experience' }] : []),
     { label: 'Projects', href: '#projects' },
     ...(awards.length ? [{ label: 'Awards', href: '#awards' }] : []),
+    { label: 'Courses', href: '#courses' },
     { label: 'Writing', href: '#writing' },
     { label: 'Notes', href: '#notes' },
   ],

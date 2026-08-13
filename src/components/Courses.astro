@@ -1,0 +1,69 @@
+---
+import Section from './Section.astro';
+import { courses } from '../data/site';
+
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
+---
+
+<Section id="courses" title="Courses Taken" index={index}>
+  <div class="flex flex-col gap-y-12">
+    {
+      courses.map((school) => (
+        <div>
+          <div class="flex items-baseline justify-between gap-x-4 border-b border-border-strong pb-2.5">
+            <h3 class="font-mono text-[0.8rem] font-bold uppercase tracking-[0.1em] text-fg">
+              {school.name}
+            </h3>
+
+            {school.detail && (
+              <p class="shrink-0 font-mono text-[0.7rem] uppercase tracking-wide text-fg-dim">
+                {school.detail}
+              </p>
+            )}
+          </div>
+
+          <ul class="flex flex-col">
+            {school.groups.map((group) => (
+              <li class="border-b border-border py-5 last:border-b-0 last:pb-0">
+                <div class="flex flex-col gap-x-6 gap-y-2 sm:flex-row">
+                  {/* Same left column as Experience and Awards, so the three
+                      sections share one vertical rule down the page. */}
+                  <div class="shrink-0 sm:w-40 sm:pt-0.5">
+                    <p class="font-mono text-[0.7rem] uppercase tracking-wide text-fg">
+                      {group.label}
+                    </p>
+
+                    {group.note && (
+                      <p class="mt-1 font-mono text-[0.7rem] uppercase tracking-wide text-fg-dim">
+                        {group.note}
+                      </p>
+                    )}
+                  </div>
+
+                  <ul class="flex min-w-0 flex-1 flex-col gap-y-1.5">
+                    {group.courses.map((course) => (
+                      <li class="flex items-baseline gap-x-3">
+                        {/* Fixed width so titles line up down the group. School
+                            subjects have no code, and simply start flush left. */}
+                        {course.code && (
+                          <span class="w-20 shrink-0 whitespace-nowrap font-mono text-[0.7rem] tracking-wide text-fg-dim sm:w-24">
+                            {course.code}
+                          </span>
+                        )}
+
+                        <span class="min-w-0 text-sm text-fg">{course.title}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</Section>
