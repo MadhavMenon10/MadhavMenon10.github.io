@@ -30,7 +30,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <!-- iOS ignores SVG here, so the home-screen icon is a raster render of
+         the same mark, full-bleed for the squircle mask iOS applies itself. -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
