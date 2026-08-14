@@ -1,12 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#0c0c0e" />
-  <rect x="8.5" y="8.5" width="15" height="15" rx="2" fill="none" stroke="#eaeae7" stroke-width="1.6" />
-  <rect x="13" y="13" width="6" height="6" rx="1" fill="#93aaff" />
-  <path
-    d="M12 5.5v3M20 5.5v3M12 23.5v3M20 23.5v3M5.5 12h3M5.5 20h3M23.5 12h3M23.5 20h3"
-    stroke="#eaeae7"
-    stroke-opacity="0.5"
-    stroke-width="1.6"
-    stroke-linecap="round"
-  />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!--
+    8-bit "M". The glyph sits on a 16x16 pixel grid (1 unit = 1 pixel) so its
+    edges land on whole device pixels at the 16px and 32px sizes browsers ask
+    for. Stems are 2px wide and the diagonals step 1px per row, the way a
+    bitmap font draws them.
+  -->
+  <defs>
+    <path
+      id="m"
+      d="M2 3h2v10H2z M12 3h2v10h-2z M4 4h2v1H4z M10 4h2v1h-2z M5 5h2v1H5z M9 5h2v1H9z M6 6h2v1H6z M8 6h2v1H8z M7 7h2v1H7z"
+    />
+  </defs>
+
+  <rect width="16" height="16" rx="1" fill="#0b0b0d" />
+
+  <!-- CRT scanlines. Behind the glyph and low contrast, so they read as
+       texture on a large touch icon without muddying a 16px tab favicon. -->
+  <g fill="#000" opacity="0.45">
+    <rect y="0.5" width="16" height="0.5" />
+    <rect y="2.5" width="16" height="0.5" />
+    <rect y="4.5" width="16" height="0.5" />
+    <rect y="6.5" width="16" height="0.5" />
+    <rect y="8.5" width="16" height="0.5" />
+    <rect y="10.5" width="16" height="0.5" />
+    <rect y="12.5" width="16" height="0.5" />
+    <rect y="14.5" width="16" height="0.5" />
+  </g>
+
+  <!-- Chromatic aberration: three offset copies peek out from under the white
+       glyph. Each channel is pushed along its own axis — red left, blue right,
+       green up — so the fringes stay distinct instead of overlapping into mud.
+       Left anti-aliased on purpose: at 16px the sub-pixel offsets blend into a
+       tint rather than hard colour bars. -->
+  <use href="#m" fill="#ff2f3a" opacity="0.85" transform="translate(-0.5 0.25)" />
+  <use href="#m" fill="#35ff6a" opacity="0.85" transform="translate(0 -0.5)" />
+  <use href="#m" fill="#2f6bff" opacity="0.85" transform="translate(0.5 0.25)" />
+
+  <!-- Only the mark itself snaps to the pixel grid, keeping hard bitmap edges
+       at every size. -->
+  <use href="#m" fill="#f2f2ee" shape-rendering="crispEdges" />
 </svg>
