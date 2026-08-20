@@ -8,10 +8,19 @@ const isHome = Astro.url.pathname === '/';
 const navHref = (href: string) => (isHome ? href : '/' + href);
 ---
 
-<header class="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-sm">
+<!--
+  The bar grows rather than scrolls: `min-h-14` holds the 3.5rem resting height
+  that fits everything on a wide screen, and the link row below wraps onto a
+  second line on narrow ones. The script at the bottom feeds the measured height
+  back into `--nav-h` so anchored sections still clear the bar once it's taller.
+-->
+<header
+  id="site-nav"
+  class="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-sm"
+>
   <nav
     aria-label="Primary"
-    class="mx-auto flex h-[var(--nav-h)] max-w-2xl items-center justify-between gap-3 px-5 sm:px-6"
+    class="mx-auto flex min-h-14 max-w-2xl items-center justify-between gap-3 px-5 py-1.5 sm:px-6"
   >
     <!-- Hidden on phones, where the link row needs the width. -->
     <a
@@ -28,13 +37,13 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
       {site.name}
     </a>
 
-    <ul class="nav-scroll flex min-w-0 items-center overflow-x-auto">
+    <ul class="flex min-w-0 flex-wrap items-center justify-center gap-y-0.5">
       {
         site.nav.map((item) => (
           <li>
             <a
               href={navHref(item.href)}
-              class="block whitespace-nowrap px-1.5 py-1 font-mono text-[0.7rem] text-fg-dim transition-colors hover:text-fg sm:px-2"
+              class="block whitespace-nowrap px-1.5 py-1 font-mono text-[0.7rem] text-fg-dim transition-colors hover:text-fg"
             >
               {item.label}
             </a>
@@ -48,6 +57,31 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
 </header>
 
 <script>
+  // The bar wraps to two lines on narrow screens, so its height isn't the
+  // 3.5rem `--nav-h` assumes. Publish the measured height back to the custom
+  // property, which `scroll-padding-top` and `[id]`'s `scroll-margin-top` both
+  // read, so a jumped-to section never lands underneath the bar. Note the
+  // header's own `min-h` is a fixed class rather than `--nav-h`: feeding a
+  // measured value into the element being measured would latch it at its
+  // tallest and never shrink back.
+  const header = document.getElementById('site-nav');
+
+  if (header) {
+    const syncNavHeight = () =>
+      document.documentElement.style.setProperty(
+        '--nav-h',
+        `${header.getBoundingClientRect().height}px`
+      );
+
+    syncNavHeight();
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(syncNavHeight).observe(header);
+    } else {
+      window.addEventListener('resize', syncNavHeight);
+    }
+  }
+
   // Hovering the name cycles a single glyph beside it — the author's initial
   // across the scripts he reads: Malayalam, Tamil, Devanagari, Latin, Spanish,
   // Greek. The slot keeps its width whether or not a glyph is in it, so the

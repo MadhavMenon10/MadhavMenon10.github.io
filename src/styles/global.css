@@ -94,15 +94,13 @@ body {
    Shared primitives
 =========================================================================== */
 
-/* Elements that scroll only as a fallback, where the scrollbar itself would be
-   noise: the nav link row on narrow screens, and the ASCII figures. Systems set
-   to always show scrollbars would otherwise draw one over content that fits. */
-.nav-scroll,
+/* The ASCII figures scroll only as a fallback, where the scrollbar itself would
+   be noise. Systems set to always show scrollbars would otherwise draw one over
+   content that fits. */
 .ascii {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.nav-scroll::-webkit-scrollbar,
 .ascii::-webkit-scrollbar {
   display: none;
 }
