@@ -6,7 +6,7 @@ github: "https://github.com/MadhavMenon10/gbdt-inference-engine"
 image: "/projects/gbdt-inference-engine.png"
 imageAlt: "Latency vs batch size for TreeInfer (GPU), XGBoost (CPU), and RAPIDS FIL on a 99-tree ensemble"
 imageFit: "contain"
-order: 1
+order: 0
 draft: false
 ---
 

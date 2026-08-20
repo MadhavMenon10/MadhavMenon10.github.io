@@ -6,7 +6,7 @@ github: "https://github.com/MadhavMenon10/CUDA-Orderbook"
 image: "/projects/cuda-orderbook.png"
 imageAlt: "Nsight Systems CUDA GPU kernel summary profiling output"
 imageFit: "contain"
-order: 0
+order: 1
 draft: false
 ---
 
