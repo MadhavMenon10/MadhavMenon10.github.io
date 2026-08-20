@@ -7,7 +7,7 @@ linkLabel: "Chrome Web Store"
 image: "/projects/sidequest.png"
 imageAlt: "SideQuest extension icon: a blue speech bubble reading SQ."
 imageFit: "contain"
-order: 1
+order: 2
 draft: false
 ---
 
