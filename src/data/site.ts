@@ -145,6 +145,7 @@ export const courses: CourseInstitution[] = [
           { code: 'CS 411',   title: 'Databases' },
           { code: 'CS 357',   title: 'Numerical Methods I' },
           { code: 'PHYS 435', title: 'Electromagnetic Fields I' },
+          { code: 'IE 421',   title: 'High Frequency Trading Technology' },
           { code: 'MACS 100', title: 'Intro to Popular TV and Movies' },
         ],
       },
