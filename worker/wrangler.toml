@@ -1,0 +1,12 @@
+name = "ask-madhav"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Origins allowed to call this worker. Anything else gets a 403, so the key
+# can't be spent from someone else's page.
+ALLOWED_ORIGINS = "https://madhavmenon10.github.io,http://localhost:4321"
+
+# ANTHROPIC_API_KEY is a secret, not a var:
+#   npx wrangler secret put ANTHROPIC_API_KEY
