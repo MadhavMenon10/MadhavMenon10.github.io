@@ -24,6 +24,18 @@ jobs:
       - name: Build with Astro
         uses: withastro/action@v3
         # Installs deps, runs `astro build`, and uploads the Pages artifact.
+        env:
+          # The chat index lists public repositories, fetched at build time.
+          # Unauthenticated calls work but share a 60/hour limit with every
+          # other job on the runner; the built-in token raises that to 5,000.
+          # The build only warns and carries on if the call fails either way.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # Optional. Set this repository variable to a deployed chat worker's
+          # URL (see worker/README.md) to have the Ask widget answer through a
+          # model instead of quoting the site. Left unset, the widget still
+          # works — it just stays in its offline mode.
+          PUBLIC_CHAT_ENDPOINT: ${{ vars.PUBLIC_CHAT_ENDPOINT }}
 
   deploy:
     needs: build

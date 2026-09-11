@@ -4,6 +4,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Chat from '../components/Chat.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -67,5 +68,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       <slot />
     </main>
     <Footer />
+    <Chat />
   </body>
 </html>

@@ -19,3 +19,7 @@ npm-debug.log*
 # os / editor
 .DS_Store
 Thumbs.db
+
+# worker deps (deployed separately from the site)
+worker/node_modules/
+worker/.wrangler/

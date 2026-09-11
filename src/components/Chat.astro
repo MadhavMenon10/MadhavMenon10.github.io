@@ -1,0 +1,505 @@
+---
+/*
+  Chat.astro — the "ask" widget.
+
+  A launcher pinned to the bottom-right corner and a panel that answers
+  questions about Madhav from the index at /chat-index.json (built by
+  src/lib/chat/knowledge.ts out of this site's own content).
+
+  Two modes, decided at build time by PUBLIC_CHAT_ENDPOINT:
+
+    unset  — offline. BM25 over the index, answers quoted verbatim from the
+             site. No network beyond the index, no key, no running cost. This
+             is what a static GitHub Pages deploy gets by default.
+
+    set    — the same retrieval runs first, then the question and the retrieved
+             passages are posted to that endpoint, which holds the API key and
+             talks to a model. See worker/README.md. If the endpoint fails for
+             any reason the widget silently falls back to the offline answer,
+             so a dead worker degrades rather than breaks.
+*/
+import { suggestions } from '../data/chat';
+---
+
+<div
+  id="ask-root"
+  class="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex flex-col items-end gap-2.5 px-4 pb-4 sm:px-6 sm:pb-6"
+>
+  <!-- ---------------------------------------------------------------- Panel -->
+  <section
+    id="ask-panel"
+    hidden
+    role="dialog"
+    aria-labelledby="ask-title"
+    class="pointer-events-auto flex h-[min(30rem,calc(100dvh-7.5rem))] w-full max-w-[23rem] flex-col overflow-hidden rounded-lg border border-border bg-bg/95 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-12px_rgba(0,0,0,0.25)] backdrop-blur-sm"
+  >
+    <header
+      class="flex shrink-0 items-center justify-between gap-2 border-b border-border px-3.5 py-2.5"
+    >
+      <h2
+        id="ask-title"
+        class="font-mono text-[0.7rem] font-bold uppercase tracking-[0.12em] text-fg"
+      >
+        <span class="font-medium text-fg-dim">&gt;</span> Ask
+      </h2>
+
+      <div class="flex items-center gap-1.5">
+        <span
+          id="ask-mode"
+          class="font-mono text-[0.6rem] lowercase tracking-[0.06em] text-fg-dim"
+        ></span>
+        <button
+          id="ask-close"
+          type="button"
+          aria-label="Close"
+          class="flex size-6 items-center justify-center rounded-md text-fg-dim transition-colors hover:bg-bg-soft hover:text-fg"
+        >
+          <svg
+            class="size-[13px]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M5 5l14 14M19 5L5 19"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Transcript. aria-live so answers are announced as they land. -->
+    <div
+      id="ask-log"
+      class="ask-log flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto px-3.5 py-3.5"
+      aria-live="polite"
+      aria-atomic="false"
+    >
+      <p class="text-[0.82rem] leading-relaxed text-fg-dim">
+        Ask about Madhav&rsquo;s work, projects, courses or awards. Answers come
+        from what&rsquo;s on this site.
+      </p>
+
+      <ul class="flex flex-wrap gap-1.5">
+        {
+          suggestions.map((s) => (
+            <li>
+              <button
+                type="button"
+                data-suggestion={s}
+                class="rounded-md border border-border px-2 py-1 text-left font-mono text-[0.65rem] text-fg-dim transition-colors hover:border-border-strong hover:text-fg"
+              >
+                {s}
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <form
+      id="ask-form"
+      class="flex shrink-0 items-center gap-2 border-t border-border px-3.5 py-2.5"
+      autocomplete="off"
+    >
+      <label class="sr-only" for="ask-input">Your question</label>
+      <input
+        id="ask-input"
+        name="q"
+        type="text"
+        maxlength="300"
+        placeholder="ask something&hellip;"
+        class="min-w-0 flex-1 bg-transparent font-mono text-[0.75rem] text-fg placeholder:text-fg-dim focus:outline-none"
+      />
+      <button
+        id="ask-send"
+        type="submit"
+        aria-label="Send"
+        class="flex size-6 shrink-0 items-center justify-center rounded-md text-fg-dim transition-colors hover:bg-bg-soft hover:text-fg disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-dim"
+      >
+        <svg
+          class="size-[14px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12h13M12 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    </form>
+  </section>
+
+  <!-- ------------------------------------------------------------- Launcher -->
+  <button
+    id="ask-launcher"
+    type="button"
+    aria-expanded="false"
+    aria-controls="ask-panel"
+    class="pointer-events-auto flex items-center gap-1.5 rounded-md border border-border bg-bg-soft/95 px-2.5 py-1.5 font-mono text-[0.7rem] text-fg-dim shadow-[0_1px_2px_rgba(0,0,0,0.05)] backdrop-blur-sm transition-colors hover:border-border-strong hover:text-fg"
+  >
+    <svg
+      class="size-[13px]"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 14a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"></path>
+    </svg>
+    ask
+  </button>
+</div>
+
+<style>
+  /* Matches the .ascii treatment: the transcript scrolls, but the bar itself
+     would be noise at this size on systems set to always show scrollbars. */
+  .ask-log {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .ask-log::-webkit-scrollbar {
+    width: 6px;
+  }
+  .ask-log::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+  }
+  .ask-log::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* The global :focus-visible ring is a heavy blue box around a field that
+     spans the whole row, and the input takes focus the moment the panel
+     opens — so every visitor would meet it. Move the cue to the row's own
+     hairline instead, which is the same signal in the site's own language and
+     just as visible to a keyboard user. */
+  #ask-form {
+    transition: border-color 0.15s ease;
+  }
+  #ask-form:focus-within {
+    border-top-color: var(--accent);
+  }
+  #ask-input:focus-visible {
+    outline: none;
+  }
+
+  /* The panel scales up from the launcher corner on open. */
+  #ask-panel[data-open] {
+    animation: ask-in 0.16s ease-out;
+  }
+  @keyframes ask-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.985);
+    }
+  }
+
+  /* Three dots while an answer is in flight. */
+  .ask-dots span {
+    display: inline-block;
+    animation: ask-blink 1.1s ease-in-out infinite;
+  }
+  .ask-dots span:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+  .ask-dots span:nth-child(3) {
+    animation-delay: 0.36s;
+  }
+  @keyframes ask-blink {
+    0%,
+    70%,
+    100% {
+      opacity: 0.25;
+    }
+    35% {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  import { reply, search, type Chunk, type Reply } from '../lib/chat/retrieve';
+
+  /* Baked in at build time. Empty string means offline-only. */
+  const ENDPOINT: string = import.meta.env.PUBLIC_CHAT_ENDPOINT ?? '';
+
+  const root = document.getElementById('ask-root');
+  const panel = document.getElementById('ask-panel');
+  const launcher = document.getElementById('ask-launcher');
+  const closeBtn = document.getElementById('ask-close');
+  const log = document.getElementById('ask-log');
+  const form = document.getElementById('ask-form') as HTMLFormElement | null;
+  const input = document.getElementById('ask-input') as HTMLInputElement | null;
+  const send = document.getElementById('ask-send') as HTMLButtonElement | null;
+  const mode = document.getElementById('ask-mode');
+
+  if (root && panel && launcher && closeBtn && log && form && input && send && mode) {
+    mode.textContent = ENDPOINT ? '' : 'offline';
+    mode.title = ENDPOINT
+      ? ''
+      : 'Answers are quoted from this site rather than generated.';
+
+    /* ------------------------------------------------------------- state -- */
+    let chunks: Chunk[] | null = null;
+    let indexError = false;
+    let busy = false;
+    /** Only used in endpoint mode; the offline path is stateless. */
+    const history: { role: 'user' | 'assistant'; content: string }[] = [];
+
+    /* ------------------------------------------------------------ helpers -- */
+    const scroll = () => {
+      log.scrollTop = log.scrollHeight;
+    };
+
+    const el = <K extends keyof HTMLElementTagNameMap>(
+      tag: K,
+      className = '',
+      text?: string
+    ): HTMLElementTagNameMap[K] => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    /** The panel's first message clears the greeting and the suggestion chips. */
+    let greeted = false;
+    const clearIntro = () => {
+      if (greeted) return;
+      log.replaceChildren();
+      greeted = true;
+    };
+
+    const addUser = (text: string) => {
+      clearIntro();
+      const bubble = el(
+        'div',
+        'max-w-[85%] self-end rounded-lg rounded-br-sm border border-border bg-bg-soft px-2.5 py-1.5 text-[0.82rem] leading-relaxed text-fg',
+        text
+      );
+      log.append(bubble);
+      scroll();
+    }
+
+    /** An empty assistant block, returned so the caller can fill it in. */
+    const addAssistant = (): HTMLElement => {
+      const block = el('div', 'flex flex-col gap-2.5');
+      log.append(block);
+      scroll();
+      return block;
+    }
+
+    const addThinking = (): HTMLElement => {
+      const block = addAssistant();
+      const dots = el('p', 'ask-dots font-mono text-[0.8rem] text-fg-dim');
+      dots.innerHTML = '<span>.</span><span>.</span><span>.</span>';
+      dots.setAttribute('aria-label', 'Thinking');
+      block.append(dots);
+      return block;
+    }
+
+    /** Render one retrieved passage as a hairline-ruled card. */
+    const renderChunk = (chunk: Chunk): HTMLElement => {
+      const card = el('div', 'border-l border-border pl-3');
+
+      const tag = el(
+        'p',
+        'font-mono text-[0.6rem] uppercase tracking-[0.1em] text-fg-dim',
+        chunk.section
+      );
+      const title = el('p', 'mt-0.5 text-[0.82rem] font-semibold leading-snug text-fg', chunk.title);
+      const body = el('p', 'mt-1 text-[0.8rem] leading-relaxed text-fg-dim', chunk.text);
+      card.append(tag, title, body);
+
+      if (chunk.href) {
+        const link = el('a', 'link mt-1.5 inline-block text-[0.72rem]', 'Read more →');
+        (link as HTMLAnchorElement).href = chunk.href;
+        if (chunk.external) {
+          (link as HTMLAnchorElement).target = '_blank';
+          (link as HTMLAnchorElement).rel = 'noopener noreferrer';
+        }
+        card.append(link);
+      }
+
+      return card;
+    }
+
+    const renderReply = (block: HTMLElement, result: Reply) => {
+      block.replaceChildren();
+      if (result.lead) {
+        block.append(el('p', 'text-[0.82rem] leading-relaxed text-fg', result.lead));
+      }
+      for (const chunk of result.items) block.append(renderChunk(chunk));
+      scroll();
+    }
+
+    /* -------------------------------------------------------------- index -- */
+    const loadIndex = async (): Promise<Chunk[]> => {
+      if (chunks) return chunks;
+      const res = await fetch('/chat-index.json', { headers: { Accept: 'application/json' } });
+      if (!res.ok) throw new Error(`index responded ${res.status}`);
+      const data = (await res.json()) as { chunks: Chunk[] };
+      chunks = data.chunks;
+      return chunks;
+    }
+
+    /* ------------------------------------------------------------ answering -- */
+
+    /**
+     * Endpoint mode. The retrieved passages go along with the question so the
+     * model answers from the site rather than from whatever it remembers about
+     * someone with a similar name. Streams back as plain text.
+     * Resolves false if the endpoint is unusable, so the caller can fall back.
+     */
+    const answerViaEndpoint = async (
+      question: string,
+      found: Chunk[],
+      block: HTMLElement
+    ): Promise<boolean> => {
+      const context = found
+        .map((c) => `## ${c.section} — ${c.title}\n${c.text}${c.href ? `\n(${c.href})` : ''}`)
+        .join('\n\n');
+
+      let res: Response;
+      try {
+        res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [...history, { role: 'user', content: question }],
+            context,
+          }),
+          signal: AbortSignal.timeout(30000),
+        });
+      } catch {
+        return false;
+      }
+
+      if (!res.ok || !res.body) return false;
+
+      const paragraph = el('p', 'whitespace-pre-wrap text-[0.82rem] leading-relaxed text-fg');
+      block.replaceChildren(paragraph);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let answer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        answer += decoder.decode(value, { stream: true });
+        paragraph.textContent = answer;
+        scroll();
+      }
+
+      if (!answer.trim()) return false;
+
+      history.push({ role: 'user', content: question });
+      history.push({ role: 'assistant', content: answer });
+      // Keep the thread short — this is a widget, not a therapist.
+      while (history.length > 8) history.shift();
+
+      // Sources under the generated answer, so a claim can always be checked.
+      const cited = found.filter((c) => c.href).slice(0, 3);
+      if (cited.length) {
+        const row = el('p', 'flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.7rem] text-fg-dim');
+        row.append(el('span', 'font-mono text-[0.6rem] uppercase tracking-[0.1em]', 'sources'));
+        for (const c of cited) {
+          const link = el('a', 'link text-[0.72rem]', c.title);
+          (link as HTMLAnchorElement).href = c.href!;
+          if (c.external) {
+            (link as HTMLAnchorElement).target = '_blank';
+            (link as HTMLAnchorElement).rel = 'noopener noreferrer';
+          }
+          row.append(link);
+        }
+        block.append(row);
+        scroll();
+      }
+
+      return true;
+    }
+
+    const ask = async (question: string) => {
+      if (busy) return;
+      busy = true;
+      send.disabled = true;
+
+      addUser(question);
+      const block = addThinking();
+
+      try {
+        const index = await loadIndex();
+
+        if (ENDPOINT) {
+          const found = search(question, index, 5).map((h) => h.chunk);
+          if (await answerViaEndpoint(question, found, block)) return;
+          // Endpoint unreachable or empty — the offline answer is still a
+          // real answer, so use it rather than showing an error.
+        }
+
+        renderReply(block, reply(question, index));
+      } catch {
+        indexError = true;
+        block.replaceChildren(
+          el(
+            'p',
+            'text-[0.82rem] leading-relaxed text-fg-dim',
+            'I couldn’t load what I know about Madhav. Reload the page and try again — or just email him.'
+          )
+        );
+        scroll();
+      } finally {
+        busy = false;
+        send.disabled = false;
+        input.focus();
+      }
+    }
+
+    /* ---------------------------------------------------------- open/close -- */
+    const open = () => {
+      panel.hidden = false;
+      panel.setAttribute('data-open', '');
+      launcher.setAttribute('aria-expanded', 'true');
+      input.focus();
+      scroll();
+      // Warm the index while the visitor is still typing their first question.
+      if (!chunks && !indexError) void loadIndex().catch(() => {});
+    }
+
+    const close = () => {
+      panel.hidden = true;
+      panel.removeAttribute('data-open');
+      launcher.setAttribute('aria-expanded', 'false');
+      launcher.focus();
+    }
+
+    launcher.addEventListener('click', () => (panel.hidden ? open() : close()));
+    closeBtn.addEventListener('click', close);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !panel.hidden) close();
+    });
+
+    log.addEventListener('click', (event) => {
+      const target = (event.target as HTMLElement).closest<HTMLElement>('[data-suggestion]');
+      if (target?.dataset.suggestion) void ask(target.dataset.suggestion);
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+      input.value = '';
+      void ask(question);
+    });
+  }
+</script>
