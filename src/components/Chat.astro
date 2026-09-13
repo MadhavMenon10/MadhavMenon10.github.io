@@ -12,11 +12,13 @@
              site. No network beyond the index, no key, no running cost. This
              is what a static GitHub Pages deploy gets by default.
 
-    set    — the same retrieval runs first, then the question and the retrieved
-             passages are posted to that endpoint, which holds the API key and
-             talks to a model. See worker/README.md. If the endpoint fails for
-             any reason the widget silently falls back to the offline answer,
-             so a dead worker degrades rather than breaks.
+    set    — the same retrieval runs first, then the question, the retrieved
+             passages and a one-line outline of the whole index are posted to
+             that endpoint, which holds the API key and talks to a model. It
+             answers in prose, asks a question back when yours was vague, and
+             suggests what to ask next. See worker/README.md. If the endpoint
+             fails for any reason the widget silently falls back to the offline
+             answer, so a dead worker degrades rather than breaks.
 */
 import { suggestions } from '../data/chat';
 ---
@@ -231,6 +233,16 @@ import { suggestions } from '../data/chat';
   /* Baked in at build time. Empty string means offline-only. */
   const ENDPOINT: string = import.meta.env.PUBLIC_CHAT_ENDPOINT ?? '';
 
+  /* The worker ends each reply with this marker and its follow-up questions.
+     Kept out of the bubble and rendered as chips instead. */
+  const NEXT = '[[NEXT]]';
+
+  /* How many retrieved passages to put in front of the model. More than the
+     offline path shows, because the model picks what's relevant and a missed
+     passage reads as "he hasn't done that" — the one failure mode worth
+     paying input tokens to avoid. */
+  const PASSAGES = 8;
+
   const root = document.getElementById('ask-root');
   const panel = document.getElementById('ask-panel');
   const launcher = document.getElementById('ask-launcher');
@@ -306,6 +318,56 @@ import { suggestions } from '../data/chat';
       return block;
     }
 
+    /**
+     * A row of clickable questions. Used for the model's suggested follow-ups,
+     * which is most of what makes the panel feel like a conversation rather
+     * than a search box — there is always an obvious next thing to press.
+     */
+    const renderChips = (block: HTMLElement, questions: string[]) => {
+      if (!questions.length) return;
+      const list = el('ul', 'flex flex-wrap gap-1.5 pt-0.5');
+      for (const q of questions) {
+        const item = el('li');
+        const chip = el(
+          'button',
+          'rounded-md border border-border px-2 py-1 text-left font-mono text-[0.65rem] text-fg-dim transition-colors hover:border-border-strong hover:text-fg',
+          q
+        );
+        chip.type = 'button';
+        chip.dataset.suggestion = q;
+        item.append(chip);
+        list.append(item);
+      }
+      block.append(list);
+      scroll();
+    }
+
+    /**
+     * Hide the follow-up marker while it is still arriving. Deltas split
+     * anywhere, so a naive split on the marker shows "[[NE" for a frame — trim
+     * any trailing prefix of it as well as the marker itself.
+     */
+    const beforeMarker = (text: string): string => {
+      const at = text.indexOf(NEXT);
+      if (at !== -1) return text.slice(0, at);
+      for (let n = NEXT.length - 1; n > 0; n--) {
+        if (text.endsWith(NEXT.slice(0, n))) return text.slice(0, -n);
+      }
+      return text;
+    }
+
+    /** The questions after the marker, if the reply got that far. */
+    const afterMarker = (text: string): string[] => {
+      const at = text.indexOf(NEXT);
+      if (at === -1) return [];
+      return text
+        .slice(at + NEXT.length)
+        .split('|')
+        .map((q) => q.replace(/^[\s\-*\d.]+/, '').trim())
+        .filter((q) => q.length > 6 && q.length < 90)
+        .slice(0, 3);
+    }
+
     /** Render one retrieved passage as a hairline-ruled card. */
     const renderChunk = (chunk: Chunk): HTMLElement => {
       const card = el('div', 'border-l border-border pl-3');
@@ -362,11 +424,17 @@ import { suggestions } from '../data/chat';
     const answerViaEndpoint = async (
       question: string,
       found: Chunk[],
+      index: Chunk[],
       block: HTMLElement
     ): Promise<boolean> => {
       const context = found
         .map((c) => `## ${c.section} — ${c.title}\n${c.text}${c.href ? `\n(${c.href})` : ''}`)
         .join('\n\n');
+
+      // One line per chunk in the whole index. Cheap in tokens and it's what
+      // lets the model say "the site lists five roles" or "there's nothing on
+      // that" instead of answering only from whatever BM25 happened to find.
+      const outline = index.map((c) => `- ${c.section}: ${c.title}`).join('\n');
 
       let res: Response;
       try {
@@ -376,6 +444,7 @@ import { suggestions } from '../data/chat';
           body: JSON.stringify({
             messages: [...history, { role: 'user', content: question }],
             context,
+            outline,
           }),
           signal: AbortSignal.timeout(30000),
         });
@@ -396,14 +465,18 @@ import { suggestions } from '../data/chat';
         const { done, value } = await reader.read();
         if (done) break;
         answer += decoder.decode(value, { stream: true });
-        paragraph.textContent = answer;
+        paragraph.textContent = beforeMarker(answer);
         scroll();
       }
 
-      if (!answer.trim()) return false;
+      const prose = beforeMarker(answer).trim();
+      if (!prose) return false;
+      paragraph.textContent = prose;
 
       history.push({ role: 'user', content: question });
-      history.push({ role: 'assistant', content: answer });
+      // Store the prose only. The follow-up line is scaffolding for the widget,
+      // and feeding it back would teach the model to talk about its own chips.
+      history.push({ role: 'assistant', content: prose });
       // Keep the thread short — this is a widget, not a therapist.
       while (history.length > 8) history.shift();
 
@@ -425,6 +498,8 @@ import { suggestions } from '../data/chat';
         scroll();
       }
 
+      renderChips(block, afterMarker(answer));
+
       return true;
     }
 
@@ -440,8 +515,8 @@ import { suggestions } from '../data/chat';
         const index = await loadIndex();
 
         if (ENDPOINT) {
-          const found = search(question, index, 5).map((h) => h.chunk);
-          if (await answerViaEndpoint(question, found, block)) return;
+          const found = search(question, index, PASSAGES).map((h) => h.chunk);
+          if (await answerViaEndpoint(question, found, index, block)) return;
           // Endpoint unreachable or empty — the offline answer is still a
           // real answer, so use it rather than showing an error.
         }
@@ -471,7 +546,11 @@ import { suggestions } from '../data/chat';
       launcher.setAttribute('aria-expanded', 'true');
       input.focus();
       scroll();
-      // Warm the index while the visitor is still typing their first question.
+      warm();
+    }
+
+    /** Fetch the index ahead of the first question, once, quietly. */
+    const warm = () => {
       if (!chunks && !indexError) void loadIndex().catch(() => {});
     }
 
@@ -493,6 +572,16 @@ import { suggestions } from '../data/chat';
       const target = (event.target as HTMLElement).closest<HTMLElement>('[data-suggestion]');
       if (target?.dataset.suggestion) void ask(target.dataset.suggestion);
     });
+
+    // Warm the index when the browser is next idle rather than waiting for the
+    // panel to open: it's ~20 kB served from the same origin, and fetching it
+    // up front takes the whole round trip off the first answer's latency.
+    if ('requestIdleCallback' in window) {
+      (window as Window & { requestIdleCallback: (cb: () => void, o?: object) => void })
+        .requestIdleCallback(warm, { timeout: 4000 });
+    } else {
+      setTimeout(warm, 2500);
+    }
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
