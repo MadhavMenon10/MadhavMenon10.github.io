@@ -3,7 +3,7 @@
     Monospace "M", drawn to match the JetBrains Mono wordmark in the nav rather
     than loaded as a font (favicons can't fetch webfonts). Colours are the
     dark-theme tokens from global.css: bg-soft tile, border hairline, fg
-    glyph, and the single accent colour as a cursor block under the vertex.
+    glyph.
   -->
   <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" fill="#141417" stroke="#23232a" />
 
@@ -15,5 +15,4 @@
     stroke-linecap="square"
     stroke-linejoin="miter"
   />
-  <rect x="14.7" y="22" width="2.6" height="2.6" fill="#93aaff" />
 </svg>
