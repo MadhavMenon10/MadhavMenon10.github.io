@@ -90,7 +90,7 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
   const glyph = document.getElementById('nav-name-glyph');
 
   if (link && glyph) {
-    const glyphs = ['മ', 'ம', 'क', 'M', 'Ñ', 'μ'];
+    const glyphs = ['മ', 'ம', 'म', 'M', 'Ñ', 'μ'];
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let timer: number | null = null;
     let i = 0;
