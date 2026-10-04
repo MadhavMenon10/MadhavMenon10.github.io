@@ -15,10 +15,11 @@
    in your head: what you're looking for, tools you use, anything a visitor
    would reasonably ask that the page doesn't answer.
 
-   LinkedIn can't be scraped (it blocks bots, and its terms forbid it), so
-   anything from there has to be copied across by hand. Paste a profile line
-   in as its own entry; keep each one to a sentence or two so a retrieved
-   answer stays short.
+   Longer LinkedIn material now has a better home: src/data/linkedin.md, which
+   takes plain Markdown under `##` headings and needs no code. (LinkedIn itself
+   can't be read by the build — it blocks bots and its terms forbid scraping —
+   so either way it is copied across by hand.) Use this array for short facts
+   that want their own match terms, and that file for prose.
 --------------------------------------------------------------------------- */
 export interface Fact {
   /** Short heading, shown above the answer. */
@@ -31,11 +32,14 @@ export interface Fact {
 
 export const facts: Fact[] = [
   {
-    title: 'Languages',
+    // Titled "Spoken" and stripped of the bare word "language" on purpose:
+    // with either in place, "what languages does he program in?" retrieves this
+    // entry ahead of the resume's skills list and answers with Malayalam.
+    title: 'Spoken languages',
     text:
       'Madhav speaks five languages: Malayalam, Tamil, Hindi, English and Spanish. ' +
       'The Greek glyph in the navbar is a nod to the physics rather than a sixth language.',
-    keywords: ['language', 'speak', 'spoken', 'multilingual', 'malayalam', 'tamil', 'hindi', 'spanish', 'greek'],
+    keywords: ['speak', 'speaks', 'spoken', 'multilingual', 'bilingual', 'fluent', 'malayalam', 'tamil', 'hindi', 'spanish', 'greek'],
   },
   {
     title: 'Where he is from',
@@ -53,18 +57,9 @@ export const facts: Fact[] = [
     keywords: ['interest', 'interested', 'focus', 'passion', 'hobby', 'hobbies', 'cuda', 'hpc', 'quant', 'trading', 'poker', 'competitive programming'],
   },
 
-  // Add your own below. A few worth having, if they're true:
-  //
-  // {
-  //   title: 'What he is looking for',
-  //   text: 'Madhav is looking for Summer 2027 internships in ... . The best way to reach him is email.',
-  //   keywords: ['hiring', 'available', 'internship', 'opportunity', 'recruiting', 'looking'],
-  // },
-  // {
-  //   title: 'Tools and languages',
-  //   text: 'Day to day: C++, CUDA, Python, Kotlin, ... .',
-  //   keywords: ['skill', 'skills', 'stack', 'tech', 'programming language', 'python', 'c++'],
-  // },
+  // Nothing about skills, tools, education or what he's looking for needs to go
+  // here — the resume PDF supplies the first three and src/data/linkedin.md the
+  // last. Add an entry only for something neither of those covers.
 ];
 
 /* ---------------------------------------------------------------------------
@@ -74,7 +69,7 @@ export const facts: Fact[] = [
 export const suggestions: string[] = [
   'What is he working on?',
   'Where has he interned?',
-  'Tell me about the CUDA projects',
+  'What is he good at?',
   'How do I get in touch?',
 ];
 

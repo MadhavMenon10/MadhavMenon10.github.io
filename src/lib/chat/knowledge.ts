@@ -3,9 +3,11 @@
 
    Everything the widget can say comes from here, and everything here comes
    from content that already exists: src/data/site.ts, the Markdown
-   collections, the hand-written facts in src/data/chat.ts, and the public
-   GitHub listing. Nothing is written twice, so adding a job or a project to
-   the site teaches the widget about it with no extra step.
+   collections, the hand-written facts in src/data/chat.ts, the resume PDF in
+   public/, the pasted LinkedIn material in src/data/linkedin.md, and the
+   public GitHub listing with each repo's README. Nothing is written twice, so
+   adding a job or a project to the site teaches the widget about it with no
+   extra step — and uploading a new resume teaches it whatever changed.
 
    One chunk is one answer. They're sized to be quoted whole — a paragraph,
    not a page — because the offline widget shows retrieved text verbatim
@@ -16,6 +18,8 @@ import { getCollection } from 'astro:content';
 import { site, experience, awards, courses, notes } from '../../data/site';
 import { facts, githubUser, githubMaxRepos } from '../../data/chat';
 import { fetchRepos } from './github';
+import { resumeChunks } from './resume';
+import { linkedinChunks } from './linkedin';
 import type { Chunk } from './retrieve';
 
 /** Markdown to plain prose: enough to stop syntax leaking into an answer. */
@@ -222,10 +226,13 @@ export async function buildIndex(): Promise<Chunk[]> {
       section: 'GitHub',
       title: repo.name,
       text:
+        // Metadata first so a short answer has the facts, then the README's
+        // own words, which are the only part that explains what it does.
         `${repo.description}` +
         (repo.language ? ` Written mainly in ${repo.language}.` : '') +
         (repo.stars ? ` ${repo.stars} star${repo.stars === 1 ? '' : 's'}.` : '') +
-        ` Last pushed ${repo.pushedAt}.`,
+        ` Last pushed ${repo.pushedAt}.` +
+        (repo.readme ? ` From its README: ${repo.readme}` : ''),
       keywords: [
         'github', 'repo', 'repository', 'code', 'source', 'open source',
         ...(repo.language ? [repo.language.toLowerCase()] : []),
@@ -235,6 +242,15 @@ export async function buildIndex(): Promise<Chunk[]> {
       external: true,
     });
   }
+
+  /* --- Resume PDF ----------------------------------------------------- */
+  // Pushed last of the site-derived material but indexed the same: the bullets
+  // carry numbers ("3.9-6.8x below XGBoost", "GPA 3.97") that exist nowhere
+  // else, and they're what a recruiter actually asks about.
+  chunks.push(...(await resumeChunks()));
+
+  /* --- LinkedIn (hand-pasted; see src/data/linkedin.md) ---------------- */
+  chunks.push(...(await linkedinChunks()));
 
   return chunks;
 }

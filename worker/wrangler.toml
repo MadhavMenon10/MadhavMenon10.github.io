@@ -8,5 +8,15 @@ compatibility_flags = ["nodejs_compat"]
 # can't be spent from someone else's page.
 ALLOWED_ORIGINS = "https://madhavmenon10.github.io,http://localhost:4321"
 
+# Optional. Uncomment to answer on a different model. Claude Haiku 4.5 is the
+# fast, cheap option; the worker adjusts the request shape per model, because
+# `output_config.effort` is valid on Opus 5 and a 400 on Haiku 4.5.
+# CHAT_MODEL = "claude-haiku-4-5"
+
+# Optional. "1" runs Claude Opus 5 in fast mode — up to 2.5x the output tokens
+# per second at $10/$50 per million instead of $5/$25. Left off: it is a real
+# price change, and most of a short answer's wait is thinking, not typing.
+# CHAT_FAST = "1"
+
 # ANTHROPIC_API_KEY is a secret, not a var:
 #   npx wrangler secret put ANTHROPIC_API_KEY
