@@ -40,9 +40,11 @@ export interface ExperienceItem {
 
 // Newest first, by start date.
 export const experience: ExperienceItem[] = [
+  { role: 'Software Engineer (via Disruption Lab)', org: 'Google', period: 'Sep 2026 — Present' },
+  { role: 'Undergraduate Researcher',       org: 'Parallel Programming Lab', period: 'Sep 2026 — Present' },
   { role: 'Software Engineer Intern',       org: 'Valeo',         period: 'Jun — Aug 2026' },
   { role: 'Software Engineer',              org: 'Disruption Lab', period: 'Feb 2026 — Present' },
-  { role: 'LLM Research Intern',            org: 'Algoverse.AI',  period: 'Sep 2025 — May 2026' },
+  { role: 'LLM Research Intern',            org: 'Algoverse.AI',  period: 'Sep 2025 — Jun 2026' },
   { role: 'Software Engineer Intern',       org: 'DigiAlert',     period: 'Jun — Aug 2025' },
   { role: 'CS 124 Honours Project Manager', org: 'UIUC',          period: 'Feb 2025 — Present' },
 ];
@@ -78,7 +80,7 @@ export const awards: AwardItem[] = [
     period: 'May 2025, May 2026',
   },
   {
-    title: 'Ruth and Hayward Scholarship',
+    title: 'Harold and Ruth Hayward Scholarship',
     org: 'Tau Beta Pi',
     period: 'May 2026',
   },
@@ -240,7 +242,7 @@ export const site: Site = {
   name: 'Madhav Anand Menon',
   role: 'Computer Science & Physics + Mathematics @ UIUC',
   tagline: 'Researching adaptive runtime systems @ <a href="https://charm.cs.illinois.edu/" target="_blank" rel="noopener noreferrer">Parallel Programming Lab</a><br>Previous SWE Intern @ <a href="https://www.valeo.com/en/" target="_blank" rel="noopener noreferrer">Valeo</a>',
-  bio: 'Hi, I\'m Madhav! I am a junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore, and now live in the US. I speak five languages (hover over my name in the navbar to see which! Note that I do not formally know Greek, it is rather a homage to all the physics I have studied). I am currently interning at Valeo.',
+  bio: 'Hi, I\'m Madhav! I am a junior at UIUC. I am interested in high performance computing (particularly GPU programming), ML/AI, scientific computing, and quantitative development (Quant Dev). I have recently been getting into competitive programming and poker. I\'ve lived in India and Singapore, and now live in the US. I speak five languages (hover over my name in the navbar to see which! Note that I do not formally know Greek, it is rather a homage to all the physics I have studied). I am currently a software engineer at Google (via Disruption Lab), working with the Cirq team on partial quantum circuit rendering, and a researcher at the Parallel Programming Lab.',
   email: 'madhavanandmenon@gmail.com',
 
   // Single-page anchor navigation. Experience and Awards drop out of the nav
