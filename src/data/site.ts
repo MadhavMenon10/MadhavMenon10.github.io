@@ -144,7 +144,7 @@ export const courses: CourseInstitution[] = [
         note: 'Upcoming',
         courses: [
           { code: 'CS 374',   title: 'Intro to Algorithms and Models of Computation' },
-          { code: 'CS 411',   title: 'Databases' },
+          { code: 'CS 411',   title: 'Database Systems' },
           { code: 'CS 357',   title: 'Numerical Methods I' },
           { code: 'PHYS 435', title: 'Electromagnetic Fields I' },
           { code: 'IE 421',   title: 'High Frequency Trading Technology' },
