@@ -6,7 +6,7 @@ github: "https://github.com/MadhavMenon10/numrel-wave-evolution"
 image: "/projects/numerical-wave-equation-solver.png"
 imageAlt: "Numerical and exact solutions of a split Gaussian pulse under the second-order stencil at t = 5.8"
 imageFit: "contain"
-order: 4
+order: 0
 draft: false
 ---
 
