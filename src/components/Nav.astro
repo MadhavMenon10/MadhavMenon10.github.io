@@ -30,7 +30,7 @@ const avatar = IDENTICON.flatMap((row) => {
 >
   <nav
     aria-label="Primary"
-    class="mx-auto flex min-h-14 max-w-2xl items-center justify-between gap-3 px-5 py-1.5 sm:px-6"
+    class="mx-auto flex min-h-14 max-w-2xl items-center gap-3 px-5 py-1.5 sm:px-6"
   >
     <!-- Hidden on phones, where the link row needs the width. -->
     <a
@@ -48,7 +48,7 @@ const avatar = IDENTICON.flatMap((row) => {
       {site.name}
     </a>
 
-    <ul class="flex min-w-0 flex-wrap items-center justify-center gap-y-0.5">
+    <ul class="mr-auto flex min-w-0 flex-wrap items-center gap-y-0.5 sm:ml-2">
       {
         site.nav.map((item) => (
           <li>
