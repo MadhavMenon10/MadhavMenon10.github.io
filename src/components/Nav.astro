@@ -6,6 +6,16 @@ import ThemeToggle from './ThemeToggle.astro';
 // home page's sections rather than looking for a missing element here.
 const isHome = Astro.url.pathname === '/';
 const navHref = (href: string) => (isHome ? href : '/' + href);
+
+// The author's GitHub identicon (a 5x5 mirrored grid) drawn as text: each lit
+// cell is a 4x2 block of '#', so the 5 cells become a 20x10 character grid.
+// Server-rendered so it shows without JS; the script below reads it back as
+// the "home" frame of the hover cycle and morphs to and from it.
+const IDENTICON = ['X.X.X', '.....', '.XXX.', 'XX.XX', '..X..'];
+const avatar = IDENTICON.flatMap((row) => {
+  const line = [...row].map((c) => (c === 'X' ? '####' : '    ')).join('');
+  return [line, line];
+}).join('\n');
 ---
 
 <!--
@@ -26,14 +36,15 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
     <a
       href={isHome ? '#top' : '/'}
       id="nav-name"
-      class="hidden shrink-0 font-mono text-[0.8rem] font-medium tracking-tight text-fg transition-colors hover:text-fg-dim sm:block"
+      class="relative hidden shrink-0 font-mono text-[0.8rem] font-medium tracking-tight text-fg transition-colors hover:text-fg-dim sm:block"
     >
-      <!-- Explicitly dim so the glyph stays grey while the name itself picks up
-           the accent colour on hover. -->
-      <span
-        id="nav-name-glyph"
-        aria-hidden="true"
-        class="inline-block w-[1.1ch] text-fg-dim"></span>
+      <!-- Hangs in the left gutter rather than taking row width: the bar was
+           already within ~40px of wrapping, and the circle needs ~50. Hidden
+           where the gutter is too narrow to hold it. Its art keeps its own
+           colour so only the name dims on hover. -->
+      <span id="nav-avatar" aria-hidden="true" class="nav-avatar">
+        <pre id="nav-avatar-art" class="nav-avatar-art">{avatar}</pre>
+      </span>
       {site.name}
     </a>
 
@@ -82,35 +93,119 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
     }
   }
 
-  // Hovering the name cycles a single glyph beside it — the author's initial
-  // across the scripts he reads: Malayalam, Tamil, Devanagari, Latin, Spanish,
-  // Greek. The slot keeps its width whether or not a glyph is in it, so the
-  // name never shifts. Skipped for reduced-motion users.
+  // Hovering the name cycles the avatar through the scripts the author reads:
+  // Malayalam, Tamil, Devanagari, Latin, Spanish, Greek, then back to the
+  // identicon, which is itself one step of the loop. Each step morphs cell by
+  // cell: the glyph is rasterised on a canvas into the same 20x10 character
+  // grid, and cells that differ scramble briefly before settling. Moving the
+  // cursor away stops the loop and morphs back to the identicon. Reduced-motion
+  // users keep the static identicon.
   const link = document.getElementById('nav-name');
-  const glyph = document.getElementById('nav-name-glyph');
+  const art = document.getElementById('nav-avatar-art');
 
-  if (link && glyph) {
-    const glyphs = ['മ', 'ம', 'म', 'M', 'Ñ', 'μ'];
+  if (link && art) {
+    const COLS = 20;
+    const ROWS = 10;
+    // One canvas cell per character cell. A monospace glyph is about 0.6em
+    // wide by 1.05em tall, so cells are 4x7 to keep letters undistorted.
+    const CELL_W = 4;
+    const CELL_H = 7;
+    const SCRAMBLE = ['#', '+', '=', '*'];
+    const STEP_MS = 1100;
+    const MORPH_MS = 450;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const home = (art.textContent ?? '').split('\n');
+    const letters = ['മ', 'ம', 'म', 'M', 'Ñ', 'μ'];
+    const frames: string[][] = [home];
+
+    // Rasterise one glyph to ROWS strings of COLS characters.
+    const raster = (ch: string): string[] => {
+      const canvas = document.createElement('canvas');
+      canvas.width = COLS * CELL_W;
+      canvas.height = ROWS * CELL_H;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return home;
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `700 ${canvas.height * 0.9}px system-ui, sans-serif`;
+      ctx.fillText(ch, canvas.width / 2, canvas.height / 2);
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const rows: string[] = [];
+      for (let r = 0; r < ROWS; r++) {
+        let line = '';
+        for (let c = 0; c < COLS; c++) {
+          let ink = 0;
+          for (let y = 0; y < CELL_H; y++) {
+            for (let x = 0; x < CELL_W; x++) {
+              const px = ((r * CELL_H + y) * canvas.width + c * CELL_W + x) * 4;
+              ink += data[px + 3];
+            }
+          }
+          const cover = ink / (255 * CELL_W * CELL_H);
+          line += cover > 0.5 ? '#' : cover > 0.2 ? '+' : ' ';
+        }
+        rows.push(line);
+      }
+      return rows;
+    };
+
+    const frame = (n: number) => (frames[n] ??= n === 0 ? home : raster(letters[n - 1]));
+
+    let shown = home;
+    let raf = 0;
+    const paint = (rows: string[]) => {
+      shown = rows;
+      art.textContent = rows.join('\n');
+    };
+
+    const morphTo = (target: string[]) => {
+      cancelAnimationFrame(raf);
+      if (reduce) return paint(target);
+      const from = shown;
+      const delay = Array.from({ length: ROWS * COLS }, () => Math.random() * 0.5);
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const t = (now - t0) / MORPH_MS;
+        if (t >= 1) return paint(target);
+        const rows: string[] = [];
+        for (let r = 0; r < ROWS; r++) {
+          let line = '';
+          for (let c = 0; c < COLS; c++) {
+            const p = (t - delay[r * COLS + c]) / 0.5;
+            const a = from[r][c];
+            const b = target[r][c];
+            line += p >= 1 || a === b ? b : p <= 0 ? a : SCRAMBLE[(Math.random() * SCRAMBLE.length) | 0];
+          }
+          rows.push(line);
+        }
+        shown = rows;
+        art.textContent = rows.join('\n');
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+
     let timer: number | null = null;
-    let i = 0;
+    let step = 0;
 
     const start = () => {
       if (reduce || timer !== null) return;
-      glyph.textContent = glyphs[i % glyphs.length];
+      step = 1;
+      morphTo(frame(step));
       timer = window.setInterval(() => {
-        i += 1;
-        glyph.textContent = glyphs[i % glyphs.length];
-      }, 700);
+        step = (step + 1) % (letters.length + 1);
+        morphTo(frame(step));
+      }, STEP_MS);
     };
 
     const stop = () => {
-      if (timer !== null) {
-        clearInterval(timer);
-        timer = null;
-      }
-      i = 0;
-      glyph.textContent = '';
+      if (timer === null) return;
+      clearInterval(timer);
+      timer = null;
+      step = 0;
+      morphTo(home);
     };
 
     link.addEventListener('mouseenter', start);
@@ -119,3 +214,38 @@ const navHref = (href: string) => (isHome ? href : '/' + href);
     link.addEventListener('blur', stop);
   }
 </script>
+
+<style>
+  /* The identicon as a circle. The art is a 20x10 grid of 8px monospace text
+     scaled down to sit inside it; the circle clips the outermost corner cells
+     a touch, as the original avatar's crop did. */
+  .nav-avatar {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    display: none;
+    margin-right: 0.5rem;
+    transform: translateY(-50%);
+    width: 2.75rem;
+    height: 2.75rem;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: 9999px;
+    background: var(--bg-soft);
+  }
+  @media (min-width: 740px) {
+    .nav-avatar { display: block; }
+  }
+  .nav-avatar-art {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1.05;
+    white-space: pre;
+    color: var(--fg);
+  }
+</style>
