@@ -140,8 +140,19 @@ export const courses: CourseInstitution[] = [
     detail: 'Fall 2024 — Present',
     groups: [
       {
-        label: 'Fall 2026',
+        label: 'Spring 2027',
         note: 'Upcoming',
+        courses: [
+          { code: 'CS 341',   title: 'Systems Programming' },
+          { code: 'CS 446',   title: 'Machine Learning' },
+          { code: 'PHYS 446', title: 'Modern Computational Physics' },
+          { code: 'STAT 400', title: 'Statistics and Probability I' },
+          { code: 'CLCV 224', title: 'Greco-Roman Antiquity and US Minority Cultures' },
+        ],
+      },
+      {
+        label: 'Fall 2026',
+        note: 'Current',
         courses: [
           { code: 'CS 374',   title: 'Intro to Algorithms and Models of Computation' },
           { code: 'CS 411',   title: 'Database Systems' },
